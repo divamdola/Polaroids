@@ -62,7 +62,7 @@ export const mockUsers = [
     name: 'Ada Stone',
     email: 'ada@example.com',
     password: 'password123',
-    role: 'customer',
+    role: 'admin',
   },
 ];
 
