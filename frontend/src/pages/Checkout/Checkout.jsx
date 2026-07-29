@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { FiCreditCard, FiShield, FiTruck } from 'react-icons/fi'
 import Button from '../../components/Button/Button'
 import SectionHeading from '../../components/SectionHeading/SectionHeading'
 import { useStore } from '../../context/StoreContext'
@@ -34,6 +35,10 @@ export default function Checkout() {
       <div className="row g-4">
         <div className="col-lg-7">
           <div className={styles.formCard}>
+            <div className="d-flex flex-wrap align-items-center gap-2 mb-4">
+              <span className={styles.badge}><FiShield className="me-2" /> Secure checkout</span>
+              <span className={styles.badge}><FiTruck className="me-2" /> Fast delivery</span>
+            </div>
             <h4 className="mb-4 fw-semibold">Billing & shipping</h4>
             <form onSubmit={handleSubmit(onSubmit)} className="row g-3">
               <div className="col-md-6">
@@ -70,7 +75,7 @@ export default function Checkout() {
                 <h5 className="fw-semibold mb-3">Payment method</h5>
                 <div className="d-grid gap-2">
                   <button type="button" className={`text-start ${styles.paymentOption} ${paymentMethod === 'card' ? styles.paymentOptionActive : ''}`} onClick={() => setPaymentMethod('card')}>
-                    Credit / Debit Card
+                    <FiCreditCard className="me-2" /> Credit / Debit Card
                   </button>
                   <button type="button" className={`text-start ${styles.paymentOption} ${paymentMethod === 'cod' ? styles.paymentOptionActive : ''}`} onClick={() => setPaymentMethod('cod')}>
                     Cash on Delivery (currently unavailable)

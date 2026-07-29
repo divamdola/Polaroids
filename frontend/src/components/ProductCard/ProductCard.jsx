@@ -1,13 +1,15 @@
-import { memo, useMemo } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { FiHeart, FiShoppingCart, FiEye } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import { useStore } from '../../context/StoreContext'
 import { formatCurrency } from '../../utils/formatters'
+import QuickViewModal from '../QuickViewModal/QuickViewModal'
 import styles from './ProductCard.module.css'
 
 const ProductCard = memo(function ProductCard({ product }) {
   const { addToCart, toggleWishlist, wishlist } = useStore()
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false)
   const isWishlisted = useMemo(() => wishlist.some((item) => item.id === product.id), [wishlist, product.id])
   const showSale = useMemo(() => product.salePrice && product.salePrice < product.price, [product.salePrice, product.price])
   const stockStatus = useMemo(() => product.stockStatus || 'In stock', [product.stockStatus])
@@ -28,9 +30,9 @@ const ProductCard = memo(function ProductCard({ product }) {
         <motion.img whileHover={{ scale: 1.04 }} transition={{ duration: 0.25 }} src={hoverImage} alt={`${product.title} preview`} className={`card-img-top ${styles.hoverImage}`} />
         {showSale && <span className={`position-absolute top-0 start-0 m-3 badge rounded-pill ${styles.saleBadge}`}>Sale</span>}
         <div className={`position-absolute bottom-0 start-0 end-0 p-3 ${styles.overlayActions}`}>
-          <Link to={`/product/${product.id}`} className={`btn btn-sm ${styles.quickViewButton}`}>
+          <button type="button" className={`btn btn-sm ${styles.quickViewButton}`} onClick={() => setIsQuickViewOpen(true)}>
             <FiEye className="me-2" /> Quick view
-          </Link>
+          </button>
         </div>
         <button
           type="button"
@@ -71,6 +73,14 @@ const ProductCard = memo(function ProductCard({ product }) {
           </button>
         </div>
       </div>
+      <QuickViewModal
+        product={product}
+        isOpen={isQuickViewOpen}
+        onClose={() => setIsQuickViewOpen(false)}
+        onAddToCart={addToCart}
+        isWishlisted={isWishlisted}
+        onToggleWishlist={toggleWishlist}
+      />
     </motion.article>
   )
 })

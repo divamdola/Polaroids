@@ -135,13 +135,14 @@
   height: 44px;
   border-radius: 999px;
   border: 1px solid rgba(17, 17, 17, 0.12);
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.78);
   color: #171514;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
   position: relative;
+  box-shadow: 0 10px 24px rgba(17, 17, 17, 0.05);
 }
 
 .iconButton:hover,
@@ -179,6 +180,10 @@
   .navList {
     gap: 0.5rem;
     padding: 1rem 0;
+  }
+
+  .navbar {
+    border-radius: 0 0 1.2rem 1.2rem;
   }
 
   .dropdownMenu,

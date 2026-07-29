@@ -3,6 +3,8 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import Hero from '../../components/Hero/Hero'
 import Loader from '../../components/Loader/Loader'
+import Testimonials from '../../components/Testimonials/Testimonials'
+import InstagramGallery from '../../components/InstagramGallery/InstagramGallery'
 import { usePageTitle } from '../../hooks/usePageTitle'
 import { useStore } from '../../context/StoreContext'
 import styles from './Home.module.css'
@@ -101,10 +103,14 @@ const Home = memo(function Home() {
 
       <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className={`container ${styles.section}`}>
         <div className={`text-center ${styles.featureStrip}`}>
+          <p className={`mb-2 ${styles.eyebrow}`}>Polaroid rituals</p>
           <h3 className="fw-semibold mb-3">Capture a little magic every day</h3>
           <p className="text-muted mb-0">Create instant memories with premium gear and timeless design.</p>
         </div>
       </motion.section>
+
+      <InstagramGallery />
+      <Testimonials />
     </div>
   )
 })

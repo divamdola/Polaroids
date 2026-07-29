@@ -1,23 +1,40 @@
 :root {
-  font-family: Inter, 'Segoe UI', sans-serif;
+  font-family: Inter, 'Segoe UI', 'SF Pro Display', sans-serif;
   color: #171514;
-  background: #f7f4ee;
+  background: #f8f3eb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  color: #f7efe7;
+  background: #0f0e0c;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: linear-gradient(180deg, #f7f4ee 0%, #fcfbf8 100%);
+  background: linear-gradient(180deg, #f8f3eb 0%, #fcfaf6 100%);
   color: #171514;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+:root[data-theme='dark'] body {
+  background: linear-gradient(180deg, #11100d 0%, #1b1916 100%);
+  color: #f7efe7;
 }
 
 a {

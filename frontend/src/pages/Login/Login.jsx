@@ -9,9 +9,13 @@ export default function Login() {
   const navigate = useNavigate()
   const { register, handleSubmit } = useForm()
 
-  const onSubmit = (data) => {
-    login({ name: data.email.split('@')[0], email: data.email })
-    navigate('/profile')
+  const onSubmit = async (data) => {
+    try {
+      await login({ email: data.email, password: data.password })
+      navigate('/profile')
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (

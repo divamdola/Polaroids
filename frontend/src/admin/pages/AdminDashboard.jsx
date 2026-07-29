@@ -1,13 +1,22 @@
-import { memo } from 'react'
+import { memo, useEffect, useState } from 'react'
+import axios from 'axios'
 import AdminShell from '../components/AdminShell'
-import { useAdminStats } from '../hooks/useAdminStats'
 
 const AdminDashboard = memo(function AdminDashboard() {
-  const stats = useAdminStats(
-    [{ total: 1250 }, { total: 890 }],
-    [{ stock: 8 }, { stock: 24 }, { stock: 6 }],
-    [{ id: 1 }, { id: 2 }, { id: 3 }],
-  )
+  const [stats, setStats] = useState({ totalRevenue: 0, totalOrders: 0, totalInventory: 0, totalCustomers: 0, lowStockItems: [] })
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/admin/dashboard`, { withCredentials: true })
+        setStats(response.data)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    loadStats()
+  }, [])
 
   return (
     <AdminShell>

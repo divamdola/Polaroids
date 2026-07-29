@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Outlet, useLocation } from 'react-router-dom'
 import Navbar from '../components/Navbar/Navbar'
 import Footer from '../components/Footer/Footer'
+import ScrollToTop from '../components/ScrollToTop/ScrollToTop'
 
 export default function MainLayout() {
   const location = useLocation()
@@ -23,6 +24,7 @@ export default function MainLayout() {
         </AnimatePresence>
       </main>
       <Footer />
+      <ScrollToTop />
     </div>
   )
 }

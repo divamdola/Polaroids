@@ -9,9 +9,13 @@ export default function Register() {
   const navigate = useNavigate()
   const { register, handleSubmit } = useForm()
 
-  const onSubmit = (data) => {
-    registerUser({ name: data.name, email: data.email })
-    navigate('/profile')
+  const onSubmit = async (data) => {
+    try {
+      await registerUser({ name: data.name, email: data.email, password: data.password })
+      navigate('/profile')
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (

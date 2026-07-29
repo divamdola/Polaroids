@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { NavLink, Link, useLocation } from 'react-router-dom'
-import { FiHeart, FiShoppingCart, FiMenu, FiSearch, FiUser } from 'react-icons/fi'
+import { FiHeart, FiShoppingCart, FiMenu, FiSearch, FiUser, FiMoon, FiSun } from 'react-icons/fi'
 import { useStore } from '../../context/StoreContext'
 import styles from './Navbar.module.css'
 
@@ -19,6 +19,10 @@ export default function Navbar() {
   const [isShopOpen, setIsShopOpen] = useState(false)
   const [isCollectionsOpen, setIsCollectionsOpen] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const [theme, setTheme] = useState(() => {
+    if (typeof window === 'undefined') return 'light'
+    return localStorage.getItem('polaroid-theme') || 'light'
+  })
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 24)
@@ -26,6 +30,11 @@ export default function Navbar() {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('polaroid-theme', theme)
+  }, [theme])
 
   const isHome = location.pathname === '/'
   const navState = !isScrolled && isHome ? styles.transparent : styles.scrolled
@@ -84,6 +93,9 @@ export default function Navbar() {
             <Link to="/shop" className={`btn position-relative ${styles.iconButton}`} aria-label="Search products" onClick={() => setIsMobileOpen(false)}>
               <FiSearch />
             </Link>
+            <button type="button" className={`btn ${styles.iconButton}`} aria-label="Toggle theme" onClick={() => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))}>
+              {theme === 'dark' ? <FiSun /> : <FiMoon />}
+            </button>
             <Link to="/wishlist" className={`btn position-relative ${styles.iconButton}`} aria-label="View wishlist" onClick={() => setIsMobileOpen(false)}>
               <FiHeart />
               {wishlistCount > 0 && <span className={`position-absolute top-0 start-100 translate-middle badge rounded-pill ${styles.badge}`}>{wishlistCount}</span>}

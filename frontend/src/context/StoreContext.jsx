@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react'
 import { toast } from 'react-toastify'
-import { getProducts } from '../services/api'
+import { getCurrentUser, getProducts, loginUser, logoutUser, registerUser } from '../services/api'
 
 const StoreContext = createContext(null)
 
@@ -60,6 +60,21 @@ export function StoreProvider({ children }) {
     fetchProducts()
   }, [fetchProducts])
 
+  useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        const response = await getCurrentUser()
+        if (response?.user) {
+          setUser(response.user)
+        }
+      } catch (error) {
+        setUser(null)
+      }
+    }
+
+    restoreSession()
+  }, [])
+
   const addToCart = useCallback((product, quantity = 1) => {
     setCart((current) => {
       const existingItem = current.find((item) => item.id === product.id)
@@ -97,19 +112,39 @@ export function StoreProvider({ children }) {
     })
   }, [])
 
-  const login = useCallback((userData) => {
-    setUser(userData)
-    toast.success(`Welcome back, ${userData.name}!`)
+  const login = useCallback(async (userData) => {
+    try {
+      const response = await loginUser(userData)
+      setUser(response.user)
+      toast.success(`Welcome back, ${response.user.name}!`)
+      return response.user
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Unable to sign in.')
+      throw error
+    }
   }, [])
 
-  const logout = useCallback(() => {
-    setUser(null)
-    toast.info('You have been signed out.')
+  const logout = useCallback(async () => {
+    try {
+      await logoutUser()
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setUser(null)
+      toast.info('You have been signed out.')
+    }
   }, [])
 
-  const register = useCallback((userData) => {
-    setUser(userData)
-    toast.success(`Thanks for joining, ${userData.name}!`)
+  const register = useCallback(async (userData) => {
+    try {
+      const response = await registerUser(userData)
+      setUser(response.user)
+      toast.success(`Thanks for joining, ${response.user.name}!`)
+      return response.user
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Unable to create account.')
+      throw error
+    }
   }, [])
 
   const cartCount = useMemo(() => cart.reduce((sum, item) => sum + item.quantity, 0), [cart])

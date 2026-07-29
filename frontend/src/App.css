@@ -3,11 +3,24 @@
 }
 
 .card {
-  border-radius: 1.25rem;
+  border-radius: 1.35rem;
 }
 
 .nav-link.active {
   color: #111111 !important;
   font-weight: 600;
+}
+
+:root[data-theme='dark'] .card,
+:root[data-theme='dark'] .form-control,
+:root[data-theme='dark'] .form-select,
+:root[data-theme='dark'] .accordion-button {
+  background-color: rgba(25, 23, 20, 0.95);
+  color: #f7efe7;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme='dark'] .text-muted {
+  color: rgba(247, 239, 231, 0.7) !important;
 }
 

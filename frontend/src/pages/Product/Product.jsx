@@ -8,6 +8,7 @@ import ProductCard from '../../components/ProductCard/ProductCard'
 import { useStore } from '../../context/StoreContext'
 import { formatCurrency } from '../../utils/formatters'
 import { getProductById, getProducts } from '../../services/api'
+import { usePageTitle } from '../../hooks/usePageTitle'
 import styles from './Product.module.css'
 
 const galleryImages = [

@@ -3,6 +3,7 @@ import axios from 'axios'
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
   timeout: 8000,
+  withCredentials: true,
 })
 
 const fallbackProducts = [
@@ -77,4 +78,24 @@ export const getProductById = async (id) => {
     const products = await getProducts()
     return products.find((product) => String(product.id) === String(id)) || null
   }
+}
+
+export const loginUser = async (payload) => {
+  const response = await api.post('/auth/login', payload)
+  return response.data
+}
+
+export const registerUser = async (payload) => {
+  const response = await api.post('/auth/register', payload)
+  return response.data
+}
+
+export const logoutUser = async () => {
+  const response = await api.post('/auth/logout')
+  return response.data
+}
+
+export const getCurrentUser = async () => {
+  const response = await api.get('/auth/me')
+  return response.data
 }
