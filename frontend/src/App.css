@@ -1,0 +1,13 @@
+.app-shell {
+  min-height: 100vh;
+}
+
+.card {
+  border-radius: 1.25rem;
+}
+
+.nav-link.active {
+  color: #111111 !important;
+  font-weight: 600;
+}
+

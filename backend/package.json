@@ -1,0 +1,19 @@
+{
+  "name": "polaroids-backend",
+  "version": "1.0.0",
+  "description": "Backend API for the Polaroids storefront",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "axios": "^1.8.0",
+    "cors": "^2.8.0",
+    "dotenv": "^16.4.0",
+    "express": "^4.21.0",
+    "mongoose": "^8.8.0"
+  }
+}

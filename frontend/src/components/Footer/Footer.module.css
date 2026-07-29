@@ -1,0 +1,27 @@
+.footer {
+  margin-top: 4rem;
+  padding: 4rem 0 2rem;
+  background: linear-gradient(135deg, #171514 0%, #282321 100%);
+  color: #f6efe8;
+}
+
+.title {
+  color: #f6efe8;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+}
+
+.text {
+  color: rgba(246, 239, 232, 0.7);
+  line-height: 1.8;
+}
+
+.link {
+  color: rgba(246, 239, 232, 0.72);
+  text-decoration: none;
+}
+
+.link:hover {
+  color: #ffffff;
+}

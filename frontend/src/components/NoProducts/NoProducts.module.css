@@ -1,0 +1,17 @@
+.container {
+  border: 1px dashed rgba(17, 17, 17, 0.14);
+  border-radius: 1.5rem;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.iconWrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  margin: 0 auto 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5efe8;
+  color: #171514;
+}

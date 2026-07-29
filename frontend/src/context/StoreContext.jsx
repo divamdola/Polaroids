@@ -1,0 +1,151 @@
+import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react'
+import { toast } from 'react-toastify'
+import { getProducts } from '../services/api'
+
+const StoreContext = createContext(null)
+
+export function StoreProvider({ children }) {
+  const [cart, setCart] = useState(() => {
+    if (typeof window === 'undefined') {
+      return []
+    }
+
+    return JSON.parse(localStorage.getItem('polaroid-cart') || '[]')
+  })
+  const [wishlist, setWishlist] = useState(() => {
+    if (typeof window === 'undefined') {
+      return []
+    }
+
+    return JSON.parse(localStorage.getItem('polaroid-wishlist') || '[]')
+  })
+  const [user, setUser] = useState(() => {
+    if (typeof window === 'undefined') {
+      return null
+    }
+
+    return JSON.parse(localStorage.getItem('polaroid-user') || 'null')
+  })
+  const [products, setProducts] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    localStorage.setItem('polaroid-cart', JSON.stringify(cart))
+  }, [cart])
+
+  useEffect(() => {
+    localStorage.setItem('polaroid-wishlist', JSON.stringify(wishlist))
+  }, [wishlist])
+
+  useEffect(() => {
+    localStorage.setItem('polaroid-user', JSON.stringify(user))
+  }, [user])
+
+  const fetchProducts = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const data = await getProducts()
+      setProducts(data)
+      setError('')
+    } catch (err) {
+      setError('We could not load the latest catalog right now.')
+      console.error(err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchProducts()
+  }, [fetchProducts])
+
+  const addToCart = useCallback((product, quantity = 1) => {
+    setCart((current) => {
+      const existingItem = current.find((item) => item.id === product.id)
+
+      if (existingItem) {
+        return current.map((item) =>
+          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item,
+        )
+      }
+
+      return [...current, { ...product, quantity }]
+    })
+    toast.success(`${product.title} added to your cart.`)
+  }, [])
+
+  const removeFromCart = useCallback((id) => {
+    setCart((current) => current.filter((item) => item.id !== id))
+  }, [])
+
+  const updateQuantity = useCallback((id, quantity) => {
+    setCart((current) =>
+      current.map((item) => (item.id === id ? { ...item, quantity } : item)).filter((item) => item.quantity > 0),
+    )
+  }, [])
+
+  const clearCart = useCallback(() => setCart([]), [])
+
+  const toggleWishlist = useCallback((product) => {
+    setWishlist((current) => {
+      const exists = current.some((item) => item.id === product.id)
+      if (exists) {
+        return current.filter((item) => item.id !== product.id)
+      }
+      return [...current, product]
+    })
+  }, [])
+
+  const login = useCallback((userData) => {
+    setUser(userData)
+    toast.success(`Welcome back, ${userData.name}!`)
+  }, [])
+
+  const logout = useCallback(() => {
+    setUser(null)
+    toast.info('You have been signed out.')
+  }, [])
+
+  const register = useCallback((userData) => {
+    setUser(userData)
+    toast.success(`Thanks for joining, ${userData.name}!`)
+  }, [])
+
+  const cartCount = useMemo(() => cart.reduce((sum, item) => sum + item.quantity, 0), [cart])
+  const wishlistCount = useMemo(() => wishlist.length, [wishlist])
+
+  const value = useMemo(
+    () => ({
+      cart,
+      wishlist,
+      products,
+      user,
+      isLoading,
+      error,
+      addToCart,
+      removeFromCart,
+      updateQuantity,
+      clearCart,
+      toggleWishlist,
+      login,
+      logout,
+      register,
+      cartCount,
+      wishlistCount,
+    }),
+    [cart, wishlist, products, user, isLoading, error, addToCart, removeFromCart, updateQuantity, clearCart, toggleWishlist, login, logout, register, cartCount, wishlistCount],
+  )
+
+  return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
+}
+
+export function useStore() {
+  const context = useContext(StoreContext)
+
+  if (!context) {
+    throw new Error('useStore must be used inside a StoreProvider')
+  }
+
+  return context
+}
