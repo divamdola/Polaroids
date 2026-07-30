@@ -68,7 +68,21 @@ export function StoreProvider({ children }) {
           setUser(response.user)
         }
       } catch (error) {
-        setUser(null)
+        // If cookie-based auth fails, try to use localStorage token
+        const localToken = localStorage.getItem('authToken')
+        if (localToken) {
+          try {
+            const response = await getCurrentUser()
+            if (response?.user) {
+              setUser(response.user)
+            }
+          } catch (retryError) {
+            setUser(null)
+            localStorage.removeItem('authToken')
+          }
+        } else {
+          setUser(null)
+        }
       }
     }
 
@@ -116,7 +130,13 @@ export function StoreProvider({ children }) {
     try {
       const response = await loginUser(userData)
       setUser(response.user)
-      toast.success(`Welcome back, ₹{response.user.name}!`)
+      
+      // Store token in localStorage as fallback for cross-origin
+      if (response.token) {
+        localStorage.setItem('authToken', response.token)
+      }
+      
+      toast.success(`Welcome back, ${response.user.name}!`)
       return response.user
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Unable to sign in.')
@@ -131,6 +151,7 @@ export function StoreProvider({ children }) {
       console.error(error)
     } finally {
       setUser(null)
+      localStorage.removeItem('authToken')
       toast.info('You have been signed out.')
     }
   }, [])

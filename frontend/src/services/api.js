@@ -9,9 +9,14 @@ const api = axios.create({
   },
 })
 
-// Add request interceptor for debugging
+// Add request interceptor to include token from localStorage
 api.interceptors.request.use(
   (config) => {
+    // Try to get token from localStorage as fallback for cross-origin
+    const localToken = localStorage.getItem('authToken')
+    if (localToken) {
+      config.headers.Authorization = `Bearer ${localToken}`
+    }
     console.log('API Request:', config.method?.toUpperCase(), config.url, config.baseURL)
     return config
   },

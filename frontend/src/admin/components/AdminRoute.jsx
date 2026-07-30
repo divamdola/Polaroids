@@ -12,7 +12,24 @@ const AdminRoute = ({ children }) => {
     const checkAuth = async () => {
       try {
         console.log('Checking admin auth with API:', import.meta.env.VITE_API_BASE_URL)
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/me`, { withCredentials: true })
+        console.log('Cookies document.cookie:', document.cookie)
+        
+        // Try to get token from localStorage as fallback
+        const localToken = localStorage.getItem('authToken')
+        console.log('Local token found:', !!localToken)
+        
+        const headers = {
+          'Content-Type': 'application/json',
+        }
+        
+        if (localToken) {
+          headers['Authorization'] = `Bearer ${localToken}`
+        }
+        
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/auth/me`, { 
+          withCredentials: true,
+          headers
+        })
         console.log('Auth response:', response.data)
         
         // Check if user has admin role
@@ -27,6 +44,8 @@ const AdminRoute = ({ children }) => {
         }
       } catch (error) {
         console.error('Auth check failed, redirecting to login', error)
+        console.error('Error details:', error.response?.data)
+        console.error('Error status:', error.response?.status)
         setError(error.message)
         // Don't redirect immediately, let user see the error
         setTimeout(() => {
