@@ -9,6 +9,14 @@ const userSchema = new mongoose.Schema(
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     isActive: { type: Boolean, default: true },
     avatar: { type: String, default: '' },
+    phone: { type: String, default: '' },
+    address: {
+      street: { type: String, default: '' },
+      city: { type: String, default: '' },
+      state: { type: String, default: '' },
+      zipCode: { type: String, default: '' },
+      country: { type: String, default: '' },
+    },
   },
   { timestamps: true },
 );

@@ -1,12 +1,34 @@
-import { AnimatePresence, motion } from 'framer-motion'
-import { FiHeart, FiShoppingCart, FiX } from 'react-icons/fi'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FiX, FiHeart, FiShoppingCart, FiMinus, FiPlus, FiTruck, FiShield, FiRefreshCw } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
-import Button from '../Button/Button'
 import { formatCurrency } from '../../utils/formatters'
 import styles from './QuickViewModal.module.css'
 
 export default function QuickViewModal({ product, isOpen, onClose, onAddToCart, isWishlisted, onToggleWishlist }) {
-  if (!product) return null
+  const [quantity, setQuantity] = useState(1)
+  const [selectedImage, setSelectedImage] = useState(0)
+  const [selectedColor, setSelectedColor] = useState(0)
+  const [selectedSize, setSelectedSize] = useState(0)
+
+  if (!isOpen || !product) return null
+
+  const images = [product.image, product.hoverImage, product.image].filter(Boolean)
+  const colors = ['Black', 'Silver', 'White']
+  const sizes = ['Small', 'Medium', 'Large']
+
+  const showSale = product.salePrice && product.salePrice < product.price
+  const discountPercentage = showSale ? Math.round(((product.price - product.salePrice) / product.price) * 100) : 0
+
+  const handleAddToCart = () => {
+    onAddToCart({ ...product, quantity })
+    onClose()
+  }
+
+  const handleQuantityChange = (delta) => {
+    const newQuantity = Math.max(1, Math.min(product.stock || 10, quantity + delta))
+    setQuantity(newQuantity)
+  }
 
   return (
     <AnimatePresence>
@@ -15,50 +37,164 @@ export default function QuickViewModal({ product, isOpen, onClose, onAddToCart, 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className={styles.overlay}
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Quick view for ${product.title}`}
+          className={styles.modalOverlay}
           onClick={onClose}
         >
           <motion.div
-            initial={{ y: 24, opacity: 0, scale: 0.98 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 16, opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-            className={styles.modal}
-            onClick={(event) => event.stopPropagation()}
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className={styles.modalContent}
+            onClick={(e) => e.stopPropagation()}
           >
-            <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close preview">
+            <button className={styles.modalClose} onClick={onClose} aria-label="Close modal">
               <FiX />
             </button>
-            <div className="row g-4 align-items-center">
-              <div className="col-lg-6">
-                <img src={product.image} alt={product.title} className={styles.image} />
+
+            <div className={styles.modalBody}>
+              {/* Image Section */}
+              <div className={styles.imageSection}>
+                <motion.img
+                  key={selectedImage}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  src={images[selectedImage]}
+                  alt={product.title}
+                  className={styles.mainImage}
+                />
+                <div className={styles.thumbnailGrid}>
+                  {images.map((img, index) => (
+                    <img
+                      key={index}
+                      src={img}
+                      alt={`₹{product.title} view ₹{index + 1}`}
+                      className={`₹{styles.thumbnail} ₹{index === selectedImage ? styles.active : ''}`}
+                      onClick={() => setSelectedImage(index)}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="col-lg-6">
-                <p className={styles.eyebrow}>{product.category}</p>
-                <h3 className={styles.title}>{product.title}</h3>
+
+              {/* Product Info */}
+              <div className={styles.infoSection}>
+                {showSale && <span className={`₹{styles.badge} ₹{styles.saleBadge}`}>Sale</span>}
+                <p className={styles.category}>{product.category}</p>
+                <h2 className={styles.title}>{product.title}</h2>
                 <p className={styles.description}>{product.description}</p>
-                <div className="d-flex align-items-center gap-2 mb-3">
-                  <span className="text-warning">★</span>
-                  <span className={styles.rating}>{product.rating?.rate || 4.7}</span>
+
+                {/* Rating */}
+                <div className={styles.rating}>
+                  <div className={styles.stars}>
+                    {'★'.repeat(Math.floor(product.rating?.rate || 4.7))}
+                    {'☆'.repeat(5 - Math.floor(product.rating?.rate || 4.7))}
+                  </div>
+                  <span className={styles.ratingValue}>{product.rating?.rate || 4.7}</span>
+                  <span className={styles.reviewCount}>({product.rating?.count || 120} reviews)</span>
                 </div>
-                <div className="d-flex align-items-center gap-3 mb-4">
-                  <span className={styles.price}>{formatCurrency(product.price)}</span>
-                  <span className={styles.badge}>Ready to ship</span>
+
+                {/* Price */}
+                <div className={styles.priceSection}>
+                  {showSale ? (
+                    <>
+                      <span className={styles.salePrice}>{formatCurrency(product.salePrice)}</span>
+                      <span className={styles.originalPrice}>{formatCurrency(product.price)}</span>
+                      <span className={styles.discount}>-{discountPercentage}%</span>
+                    </>
+                  ) : (
+                    <span className={styles.price}>{formatCurrency(product.price)}</span>
+                  )}
                 </div>
-                <div className="d-flex flex-wrap gap-2">
-                  <Button onClick={() => onAddToCart(product)}>
-                    <FiShoppingCart className="me-2" /> Add to cart
-                  </Button>
-                  <button type="button" className={styles.wishlistButton} onClick={() => onToggleWishlist(product)}>
-                    <FiHeart className={`me-2 ${isWishlisted ? styles.activeHeart : ''}`} /> {isWishlisted ? 'Saved' : 'Wishlist'}
+
+                {/* Color Options */}
+                <div className={styles.optionsSection}>
+                  <label className={styles.optionLabel}>Color: {colors[selectedColor]}</label>
+                  <div className={styles.colorOptions}>
+                    {colors.map((color, index) => (
+                      <button
+                        key={color}
+                        className={`₹{styles.colorOption} ₹{index === selectedColor ? styles.active : ''}`}
+                        style={{ backgroundColor: color.toLowerCase() }}
+                        onClick={() => setSelectedColor(index)}
+                        aria-label={`Select ₹{color}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Size Options */}
+                <div className={styles.optionsSection}>
+                  <label className={styles.optionLabel}>Size: {sizes[selectedSize]}</label>
+                  <div className={styles.sizeOptions}>
+                    {sizes.map((size) => (
+                      <button
+                        key={size}
+                        className={`₹{styles.sizeOption} ₹{size === sizes[selectedSize] ? styles.active : ''}`}
+                        onClick={() => setSelectedSize(sizes.indexOf(size))}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Quantity */}
+                <div className={styles.quantitySection}>
+                  <label className={styles.quantityLabel}>Quantity:</label>
+                  <div className={styles.quantitySelector}>
+                    <button className={styles.quantityButton} onClick={() => handleQuantityChange(-1)} disabled={quantity <= 1}>
+                      <FiMinus />
+                    </button>
+                    <span className={styles.quantityValue}>{quantity}</span>
+                    <button className={styles.quantityButton} onClick={() => handleQuantityChange(1)} disabled={quantity >= (product.stock || 10)}>
+                      <FiPlus />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Stock Status */}
+                <p className={`₹{styles.stockStatus} ₹{product.stock > 0 ? styles.inStock : styles.outOfStock}`}>
+                  {product.stock > 0 ? `₹{product.stock} in stock` : 'Out of stock'}
+                </p>
+
+                {/* Actions */}
+                <div className={styles.actions}>
+                  <button
+                    className={styles.primaryButton}
+                    onClick={handleAddToCart}
+                    disabled={product.stock <= 0}
+                  >
+                    <FiShoppingCart />
+                    Add to Cart
+                  </button>
+                  <button
+                    className={`₹{styles.wishlistButton} ₹{isWishlisted ? 'active' : ''}`}
+                    onClick={() => onToggleWishlist(product)}
+                    aria-label="Toggle wishlist"
+                  >
+                    <FiHeart />
                   </button>
                 </div>
-                <Link to={`/product/${product.id}`} className={styles.link} onClick={onClose}>
-                  View full details
-                </Link>
+
+                {/* Features */}
+                <div className={styles.features}>
+                  <div className={styles.feature}>
+                    <FiTruck className={styles.featureIcon} />
+                    <span>Free shipping</span>
+                  </div>
+                  <div className={styles.feature}>
+                    <FiShield className={styles.featureIcon} />
+                    <span>2-year warranty</span>
+                  </div>
+                  <div className={styles.feature}>
+                    <FiRefreshCw className={styles.featureIcon} />
+                    <span>30-day returns</span>
+                  </div>
+                  <div className={styles.feature}>
+                    <FiShield className={styles.featureIcon} />
+                    <span>Secure payment</span>
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import User from '../models/User.js';
 import Order from '../models/Order.js';
@@ -105,6 +106,30 @@ router.get('/discounts', requireAuth, requireAdmin, (_req, res) => {
     { id: 'discount_1', code: 'SAVE10', value: 10, active: true },
     { id: 'discount_2', code: 'WELCOME15', value: 15, active: true },
   ]);
+});
+
+// Get user by ID with their orders
+router.get('/users/:userId/orders', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ message: 'Database not available' });
+    }
+
+    const user = await User.findById(userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const orders = await Order.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .populate('items.product', 'title price');
+
+    return res.json({ user, orders });
+  } catch (error) {
+    return res.status(500).json({ message: 'Unable to fetch user orders', error: error.message });
+  }
 });
 
 export default router;

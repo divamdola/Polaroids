@@ -35,8 +35,38 @@ const fallbackUsers = [
   },
 ];
 
+const fallbackOrders = [
+  {
+    id: 'order_1',
+    user: 'user_1',
+    items: [
+      {
+        product: 'prod_1',
+        title: 'Polaroid OneStep 2',
+        quantity: 1,
+        price: 129,
+      },
+    ],
+    subtotal: 129,
+    shipping: 0,
+    tax: 10.32,
+    total: 139.32,
+    status: 'Delivered',
+    paymentMethod: 'Card',
+    shippingAddress: {
+      name: 'Ada Stone',
+      email: 'ada@example.com',
+      address: '123 Main St',
+      city: 'New York',
+      postalCode: '10001',
+    },
+    createdAt: new Date('2024-01-15'),
+  },
+];
+
 export const getFallbackProducts = () => fallbackProducts;
 export const getFallbackUsers = () => fallbackUsers;
+export const getFallbackOrders = () => fallbackOrders;
 
 export const createFallbackUser = ({ name, email, password, role = 'user' }) => {
   const user = {
@@ -49,4 +79,15 @@ export const createFallbackUser = ({ name, email, password, role = 'user' }) => 
 
   fallbackUsers.push(user);
   return user;
+};
+
+export const createFallbackOrder = (orderData) => {
+  const order = {
+    id: `order_${fallbackOrders.length + 1}`,
+    ...orderData,
+    createdAt: new Date(),
+  };
+
+  fallbackOrders.push(order);
+  return order;
 };

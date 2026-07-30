@@ -1,30 +1,33 @@
 import { memo, useEffect, useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { FiShoppingBag, FiSearch, FiEye, FiFilter, FiX, FiCheck, FiClock, FiTruck, FiPackage, FiChevronDown, FiChevronUp } from 'react-icons/fi'
+import { FiArrowLeft, FiShoppingBag, FiEye, FiFilter, FiX, FiCheck, FiClock, FiTruck, FiPackage, FiChevronDown, FiChevronUp } from 'react-icons/fi'
 import AdminShell from '../components/AdminShell'
 import OrderTimeline from '../../components/OrderTimeline/OrderTimeline'
 import React from 'react'
 
-const Orders = memo(function Orders() {
+const UserOrders = memo(function UserOrders() {
+  const { userId } = useParams()
+  const navigate = useNavigate()
+  const [userData, setUserData] = useState(null)
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [showOrderModal, setShowOrderModal] = useState(false)
   const [expandedOrders, setExpandedOrders] = useState({})
 
   useEffect(() => {
-    fetchOrders()
-  }, [])
+    fetchUserOrders()
+  }, [userId])
 
-  const fetchOrders = async () => {
+  const fetchUserOrders = async () => {
     try {
       setLoading(true)
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/orders`, { withCredentials: true })
-      setOrders(response.data)
+      const response = await axios.get(`₹{import.meta.env.VITE_API_BASE_URL}/admin/users/₹{userId}/orders`, { withCredentials: true })
+      setUserData(response.data.user)
+      setOrders(response.data.orders || [])
     } catch (error) {
-      console.error('Failed to fetch orders:', error)
+      console.error('Failed to fetch user orders:', error)
     } finally {
       setLoading(false)
     }
@@ -32,8 +35,8 @@ const Orders = memo(function Orders() {
 
   const handleUpdateOrderStatus = async (orderId, newStatus) => {
     try {
-      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/orders/${orderId}/status`, { status: newStatus }, { withCredentials: true })
-      await fetchOrders()
+      await axios.put(`₹{import.meta.env.VITE_API_BASE_URL}/orders/₹{orderId}/status`, { status: newStatus }, { withCredentials: true })
+      await fetchUserOrders()
     } catch (error) {
       console.error('Failed to update order status:', error)
       alert('Failed to update order status')
@@ -51,17 +54,6 @@ const Orders = memo(function Orders() {
       [orderId]: !prev[orderId]
     }))
   }
-
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = 
-      order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (order.user?.name && order.user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (order.user?.email && order.user.email.toLowerCase().includes(searchTerm.toLowerCase()))
-    
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter
-    
-    return matchesSearch && matchesStatus
-  })
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -99,36 +91,22 @@ const Orders = memo(function Orders() {
     <AdminShell>
       <div className="card border-0 shadow-sm rounded-4 p-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <div>
-            <h3 className="fw-semibold mb-1"><FiShoppingBag className="me-2" />Order Management</h3>
-            <p className="text-muted mb-0">View and manage all customer orders</p>
-          </div>
-          <div className="d-flex gap-2">
-            <div className="position-relative">
-              <span className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" style={{ display: 'inline-flex', alignItems: 'center' }}>
-                <FiSearch style={{ width: '18px', height: '18px' }} />
+          <div className="d-flex align-items-center">
+            <button className="btn btn-outline-secondary me-3" onClick={() => navigate('/admin/customers')}>
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <FiArrowLeft style={{ width: '18px', height: '18px' }} />
               </span>
-              <input
-                type="text"
-                className="form-control rounded-pill ps-5"
-                placeholder="Search orders..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div className="dropdown">
-              <button className="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
-                <FiFilter className="me-2" />
-                {statusFilter === 'all' ? 'All Status' : statusFilter}
-              </button>
-              <ul className="dropdown-menu">
-                <li><button className="dropdown-item" onClick={() => setStatusFilter('all')}>All Status</button></li>
-                <li><button className="dropdown-item" onClick={() => setStatusFilter('Pending')}>Pending</button></li>
-                <li><button className="dropdown-item" onClick={() => setStatusFilter('Processing')}>Processing</button></li>
-                <li><button className="dropdown-item" onClick={() => setStatusFilter('Shipped')}>Shipped</button></li>
-                <li><button className="dropdown-item" onClick={() => setStatusFilter('Delivered')}>Delivered</button></li>
-                <li><button className="dropdown-item" onClick={() => setStatusFilter('Cancelled')}>Cancelled</button></li>
-              </ul>
+            </button>
+            <div>
+              <h3 className="fw-semibold mb-1">
+                <span className="d-inline-flex align-items-center">
+                  <FiShoppingBag className="me-2" style={{ width: '24px', height: '24px' }} />
+                  User Orders
+                </span>
+              </h3>
+              <p className="text-muted mb-0">
+                {userData?.name || 'User'} - {userData?.email || 'No email'}
+              </p>
             </div>
           </div>
         </div>
@@ -144,7 +122,6 @@ const Orders = memo(function Orders() {
               <thead>
                 <tr>
                   <th>Order ID</th>
-                  <th>Customer</th>
                   <th>Items</th>
                   <th>Total</th>
                   <th>Status</th>
@@ -153,17 +130,11 @@ const Orders = memo(function Orders() {
                 </tr>
               </thead>
               <tbody>
-                {filteredOrders.map(order => (
+                {orders.map(order => (
                   <React.Fragment key={order._id}>
                     <tr>
                       <td>
                         <span className="fw-semibold">#{order._id.slice(-6)}</span>
-                      </td>
-                      <td>
-                        <div>
-                          <div className="fw-semibold">{order.user?.name || 'Unknown'}</div>
-                          <small className="text-muted">{order.user?.email || 'No email'}</small>
-                        </div>
                       </td>
                       <td>
                         <div className="d-flex flex-column">
@@ -178,7 +149,7 @@ const Orders = memo(function Orders() {
                         <span className="fw-semibold">₹{order.total?.toFixed(2) || '0.00'}</span>
                       </td>
                       <td>
-                        <span className={`badge ${getStatusColor(order.status)}`}>
+                        <span className={`badge ₹{getStatusColor(order.status)}`}>
                           {getStatusIcon(order.status)}
                           <span className="ms-1">{order.status}</span>
                         </span>
@@ -214,8 +185,8 @@ const Orders = memo(function Orders() {
                       </td>
                     </tr>
                     {expandedOrders[order._id] && (
-                      <tr key={`timeline-${order._id}`}>
-                        <td colSpan="7" className="p-3">
+                      <tr key={`timeline-₹{order._id}`}>
+                        <td colSpan="6" className="p-3">
                           <OrderTimeline 
                             status={order.status} 
                             orderDate={order.createdAt}
@@ -228,12 +199,12 @@ const Orders = memo(function Orders() {
               </tbody>
             </table>
 
-            {filteredOrders.length === 0 && (
+            {orders.length === 0 && (
               <div className="text-center py-5">
                 <div className="text-muted mb-3 d-flex justify-content-center">
                   <FiShoppingBag style={{ width: '48px', height: '48px' }} />
                 </div>
-                <p className="text-muted">No orders found</p>
+                <p className="text-muted">No orders found for this user</p>
               </div>
             )}
           </div>
@@ -257,9 +228,9 @@ const Orders = memo(function Orders() {
                       <h6 className="fw-semibold mb-3">Customer Information</h6>
                       <div className="card bg-light">
                         <div className="card-body">
-                          <p className="mb-1"><strong>Name:</strong> {selectedOrder.user?.name || 'Unknown'}</p>
-                          <p className="mb-1"><strong>Email:</strong> {selectedOrder.user?.email || 'No email'}</p>
-                          <p className="mb-0"><strong>User ID:</strong> {selectedOrder.user?._id || 'N/A'}</p>
+                          <p className="mb-1"><strong>Name:</strong> {userData?.name || 'Unknown'}</p>
+                          <p className="mb-1"><strong>Email:</strong> {userData?.email || 'No email'}</p>
+                          <p className="mb-0"><strong>User ID:</strong> {userData?._id || 'N/A'}</p>
                         </div>
                       </div>
                     </div>
@@ -340,4 +311,4 @@ const Orders = memo(function Orders() {
   )
 })
 
-export default Orders
+export default UserOrders

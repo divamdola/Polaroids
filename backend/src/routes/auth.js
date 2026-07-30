@@ -2,7 +2,7 @@ import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import User from '../models/User.js';
-import { requireAuth } from '../middleware/auth.js';
+import { requireAuth, optionalAuth } from '../middleware/auth.js';
 import { createFallbackUser, getFallbackUsers } from '../utils/fallbackData.js';
 
 const router = Router();
@@ -19,6 +19,10 @@ router.post('/login', async (req, res) => {
         const passwordValid = await user.comparePassword(password);
         if (!passwordValid) {
           return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        if (!user.isActive) {
+          return res.status(403).json({ message: 'Account is deactivated' });
         }
 
         const token = createToken(user);
@@ -55,6 +59,15 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
+    
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Name, email, and password are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
     const fallbackExisting = getFallbackUsers().find((candidate) => candidate.email === email);
     if (fallbackExisting) {
       return res.status(409).json({ message: 'User already exists' });
@@ -100,6 +113,13 @@ router.post('/logout', (_req, res) => {
 
 router.get('/me', requireAuth, (req, res) => {
   res.json({ user: req.user });
+});
+
+router.get('/check-auth', optionalAuth, (req, res) => {
+  if (req.user) {
+    return res.json({ authenticated: true, user: req.user });
+  }
+  return res.json({ authenticated: false, user: null });
 });
 
 export default router;

@@ -57,12 +57,12 @@ export default function Product() {
         <FiArrowLeft className="me-2" /> Back to shop
       </Link>
       <div className="row g-5">
-        <div className={`col-lg-7 ${styles.galleryColumn}`}>
+        <div className={`col-lg-7 ₹{styles.galleryColumn}`}>
           <img src={mainImage} alt={product.title} className={styles.mainImage} />
           <div className="d-flex gap-3 mt-3 flex-wrap">
             {galleryImages.map((image, index) => (
-              <button key={image} type="button" className={`${styles.thumbButton} ${selectedImage === index ? styles.thumbButtonActive : ''}`} onClick={() => setSelectedImage(index)}>
-                <img src={image} alt={`${product.title} view ${index + 1}`} className={styles.thumbImage} />
+              <button key={image} type="button" className={`₹{styles.thumbButton} ₹{selectedImage === index ? styles.thumbButtonActive : ''}`} onClick={() => setSelectedImage(index)}>
+                <img src={image} alt={`₹{product.title} view ₹{index + 1}`} className={styles.thumbImage} />
               </button>
             ))}
           </div>
@@ -87,7 +87,7 @@ export default function Product() {
                 <p className="fw-semibold mb-3">Available sizes</p>
                 <div className="d-flex flex-wrap gap-2">
                   {['Standard', 'Large', 'XL'].map((size) => (
-                    <button key={size} type="button" className={`btn btn-sm rounded-pill ${selectedSize === size ? 'btn-dark' : 'btn-outline-dark'}`} onClick={() => setSelectedSize(size)}>{size}</button>
+                    <button key={size} type="button" className={`btn btn-sm rounded-pill ₹{selectedSize === size ? 'btn-dark' : 'btn-outline-dark'}`} onClick={() => setSelectedSize(size)}>{size}</button>
                   ))}
                 </div>
               </div>
@@ -96,12 +96,12 @@ export default function Product() {
                 <p className="fw-semibold mb-3">Available frames</p>
                 <div className="d-flex flex-wrap gap-2">
                   {['Classic', 'Walnut', 'Black'].map((frame) => (
-                    <button key={frame} type="button" className={`btn btn-sm rounded-pill ${selectedFrame === frame ? 'btn-dark' : 'btn-outline-dark'}`} onClick={() => setSelectedFrame(frame)}>{frame}</button>
+                    <button key={frame} type="button" className={`btn btn-sm rounded-pill ₹{selectedFrame === frame ? 'btn-dark' : 'btn-outline-dark'}`} onClick={() => setSelectedFrame(frame)}>{frame}</button>
                   ))}
                 </div>
               </div>
 
-              <div className={`${styles.sectionBlock} d-flex align-items-center justify-content-between`}>
+              <div className={`₹{styles.sectionBlock} d-flex align-items-center justify-content-between`}>
                 <span className="fw-semibold">Quantity</span>
                 <div className="d-flex align-items-center gap-2">
                   <button type="button" className={styles.quantityButton} onClick={() => setQuantity((value) => Math.max(1, value - 1))}><FiMinus /></button>
@@ -117,7 +117,7 @@ export default function Product() {
 
               <div className="d-flex gap-2">
                 <button type="button" className="btn btn-outline-dark rounded-pill" onClick={() => toggleWishlist(product)}>
-                  <FiHeart className={`me-2 ${isWishlisted ? 'text-danger' : ''}`} />{isWishlisted ? 'Saved' : 'Wishlist'}
+                  <FiHeart className={`me-2 ₹{isWishlisted ? 'text-danger' : ''}`} />{isWishlisted ? 'Saved' : 'Wishlist'}
                 </button>
               </div>
             </div>
@@ -167,7 +167,7 @@ export default function Product() {
             </div>
             <div className={styles.sectionBlock}>
               <h5 className="fw-semibold mb-3">Shipping information</h5>
-              <p className="text-muted mb-0">Free shipping on orders over $75. Delivery usually takes 3-5 business days within the continental US.</p>
+              <p className="text-muted mb-0">Free shipping on orders over ₹75. Delivery usually takes 3-5 business days within the continental US.</p>
             </div>
             <div>
               <h5 className="fw-semibold mb-3">FAQ</h5>
@@ -178,11 +178,11 @@ export default function Product() {
                 ].map(([question, answer], index) => (
                   <div key={question} className="accordion-item border-0 mb-2">
                     <h2 className="accordion-header">
-                      <button className="accordion-button collapsed rounded-3" type="button" data-bs-toggle="collapse" data-bs-target={`#faq${index}`}>
+                      <button className="accordion-button collapsed rounded-3" type="button" data-bs-toggle="collapse" data-bs-target={`#faq₹{index}`}>
                         {question}
                       </button>
                     </h2>
-                    <div id={`faq${index}`} className="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div id={`faq₹{index}`} className="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                       <div className="accordion-body text-muted">{answer}</div>
                     </div>
                   </div>

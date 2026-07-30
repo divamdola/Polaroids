@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import mongoose from 'mongoose';
 import Product from '../models/Product.js';
-import { requireAuth, requireAdmin } from '../middleware/auth.js';
+import { requireAuth, requireAdmin, optionalAuth } from '../middleware/auth.js';
 import { getFallbackProducts } from '../utils/fallbackData.js';
 
 const router = Router();
 
-router.get('/', async (_req, res) => {
+// Get all products (public)
+router.get('/', optionalAuth, async (_req, res) => {
   try {
     if (mongoose.connection.readyState !== 1) {
       return res.json(getFallbackProducts());
@@ -19,7 +20,8 @@ router.get('/', async (_req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+// Get single product (public)
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product || !product.isActive) {
@@ -31,6 +33,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Create product (admin only)
 router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
     const product = await Product.create(req.body);
@@ -40,6 +43,7 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
+// Update product (admin only)
 router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
@@ -52,6 +56,7 @@ router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
+// Delete product (admin only)
 router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
@@ -61,6 +66,39 @@ router.delete('/:id', requireAuth, requireAdmin, async (req, res) => {
     return res.json({ message: 'Product deleted successfully' });
   } catch (error) {
     return res.status(500).json({ message: 'Unable to delete product', error: error.message });
+  }
+});
+
+// Search products (public)
+router.get('/search/query', optionalAuth, async (req, res) => {
+  try {
+    const { q } = req.query;
+    
+    if (!q) {
+      return res.json([]);
+    }
+
+    if (mongoose.connection.readyState !== 1) {
+      const results = getFallbackProducts().filter(p => 
+        p.name.toLowerCase().includes(q.toLowerCase()) ||
+        p.description.toLowerCase().includes(q.toLowerCase()) ||
+        p.category.toLowerCase().includes(q.toLowerCase())
+      );
+      return res.json(results);
+    }
+
+    const products = await Product.find({
+      isActive: true,
+      $or: [
+        { title: { $regex: q, $options: 'i' } },
+        { description: { $regex: q, $options: 'i' } },
+        { category: { $regex: q, $options: 'i' } },
+      ],
+    }).sort({ createdAt: -1 });
+
+    return res.json(products);
+  } catch (error) {
+    return res.status(500).json({ message: 'Unable to search products', error: error.message });
   }
 });
 
