@@ -2,9 +2,42 @@ import axios from 'axios'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
-  timeout: 8000,
+  timeout: 15000,
   withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 })
+
+// Add request interceptor for debugging
+api.interceptors.request.use(
+  (config) => {
+    console.log('API Request:', config.method?.toUpperCase(), config.url, config.baseURL)
+    return config
+  },
+  (error) => {
+    console.error('API Request Error:', error)
+    return Promise.reject(error)
+  }
+)
+
+// Add response interceptor for debugging
+api.interceptors.response.use(
+  (response) => {
+    console.log('API Response:', response.config.url, response.status)
+    return response
+  },
+  (error) => {
+    console.error('API Response Error:', error.config?.url, error.message)
+    if (error.response) {
+      console.error('Error Status:', error.response.status)
+      console.error('Error Data:', error.response.data)
+    } else if (error.request) {
+      console.error('No response received:', error.request)
+    }
+    return Promise.reject(error)
+  }
+)
 
 const fallbackProducts = [
   {
