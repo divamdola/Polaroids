@@ -9,6 +9,23 @@ const router = Router();
 
 const createToken = (user) => jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'polaroid-secret', { expiresIn: '7d' });
 
+const getCookieOptions = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    };
+  }
+  return {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: false,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  };
+};
+
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -26,12 +43,7 @@ router.post('/login', async (req, res) => {
         }
 
         const token = createToken(user);
-        res.cookie('token', token, {
-          httpOnly: true,
-          sameSite: 'lax',
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: 1000 * 60 * 60 * 24 * 7,
-        });
+        res.cookie('token', token, getCookieOptions());
 
         return res.json({ user: { id: user._id, name: user.name, email: user.email, role: user.role }, token });
       }
@@ -43,12 +55,7 @@ router.post('/login', async (req, res) => {
     }
 
     const token = createToken({ _id: fallbackUser.id, role: fallbackUser.role });
-    res.cookie('token', token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    });
+    res.cookie('token', token, getCookieOptions());
 
     return res.json({ user: { id: fallbackUser.id, name: fallbackUser.name, email: fallbackUser.email, role: fallbackUser.role }, token });
   } catch (error) {
@@ -82,24 +89,14 @@ router.post('/register', async (req, res) => {
       const user = await User.create({ name, email, password, role: 'user' });
       const token = createToken(user);
 
-      res.cookie('token', token, {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 1000 * 60 * 60 * 24 * 7,
-      });
+      res.cookie('token', token, getCookieOptions());
 
       return res.status(201).json({ user: { id: user._id, name: user.name, email: user.email, role: user.role }, token });
     }
 
     const fallbackUser = createFallbackUser({ name, email, password });
     const token = createToken({ _id: fallbackUser.id, role: fallbackUser.role });
-    res.cookie('token', token, {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    });
+    res.cookie('token', token, getCookieOptions());
     return res.status(201).json({ user: { id: fallbackUser.id, name: fallbackUser.name, email: fallbackUser.email, role: fallbackUser.role }, token });
   } catch (error) {
     return res.status(500).json({ message: 'Unable to register user', error: error.message });
