@@ -129,6 +129,13 @@ router.post('/upload', upload.array('images', 12), async (req, res) => {
       return res.status(400).json({ message: 'No files uploaded' });
     }
 
+    // Check if Cloudinary is configured
+    if (!process.env.CLOUDINARY_CLOUD_NAME) {
+      return res.status(500).json({ 
+        message: 'Cloudinary is not configured on the server. Please contact administrator.' 
+      });
+    }
+
     const uploadedImages = req.files.map(file => ({
       image: file.path, // Cloudinary URL
       description: '',
@@ -137,7 +144,11 @@ router.post('/upload', upload.array('images', 12), async (req, res) => {
 
     return res.json({ images: uploadedImages });
   } catch (error) {
-    return res.status(500).json({ message: 'Unable to upload images', error: error.message });
+    console.error('Upload error:', error);
+    return res.status(500).json({ 
+      message: 'Unable to upload images', 
+      error: error.message 
+    });
   }
 });
 

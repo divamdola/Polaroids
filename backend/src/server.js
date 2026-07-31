@@ -18,6 +18,7 @@ const port = process.env.PORT || 5000;
 
 const allowedOrigins = [
   'https://polaroids-2.onrender.com',
+  'https://polaroids-1.onrender.com',
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',

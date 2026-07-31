@@ -61,7 +61,8 @@ export default function Product() {
     files.forEach(file => formData.append('images', file))
 
     try {
-      const response = await fetch('http://localhost:5002/api/products/upload', {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5002/api'
+      const response = await fetch(`${apiUrl}/products/upload`, {
         method: 'POST',
         body: formData,
       })
@@ -278,6 +279,9 @@ export default function Product() {
                                   src={img.image} 
                                   alt={`Uploaded ${index + 1}`} 
                                   className="w-100 h-100 object-fit-cover"
+                                  onError={(e) => {
+                                    e.target.src = 'https://via.placeholder.com/400x300?text=Image+Error'
+                                  }}
                                 />
                                 <div className="position-absolute top-0 end-0 p-2">
                                   <button 
