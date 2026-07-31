@@ -13,7 +13,7 @@ router.get('/', requireAuth, requireAdmin, async (req, res) => {
       return res.json(getFallbackOrders());
     }
 
-    const orders = await Order.find().sort({ createdAt: -1 }).populate('user', 'name email').populate('items.product', 'title price');
+    const orders = await Order.find().sort({ createdAt: -1 }).populate('user', 'name email').populate('items.product', 'title price customImages');
     return res.json(orders);
   } catch (error) {
     return res.status(500).json({ message: 'Unable to fetch orders', error: error.message });
@@ -28,7 +28,7 @@ router.get('/my-orders', requireAuth, async (req, res) => {
       return res.json(userOrders);
     }
 
-    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 }).populate('items.product', 'title price');
+    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 }).populate('items.product', 'title price customImages');
     return res.json(orders);
   } catch (error) {
     return res.status(500).json({ message: 'Unable to fetch orders', error: error.message });
@@ -38,7 +38,7 @@ router.get('/my-orders', requireAuth, async (req, res) => {
 // Get single order
 router.get('/:id', requireAuth, async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate('user', 'name email').populate('items.product', 'title price');
+    const order = await Order.findById(req.params.id).populate('user', 'name email').populate('items.product', 'title price customImages');
     
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });

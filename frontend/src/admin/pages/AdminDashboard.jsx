@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from 'react'
 import axios from 'axios'
 import AdminShell from '../components/AdminShell'
+import { formatCurrency } from '../../utils/formatters'
 
 const AdminDashboard = memo(function AdminDashboard() {
   const [stats, setStats] = useState({ totalRevenue: 0, totalOrders: 0, totalInventory: 0, totalCustomers: 0, lowStockItems: [] })
@@ -29,7 +30,7 @@ const AdminDashboard = memo(function AdminDashboard() {
         <div className="col-md-6">
           <div className="card border-0 shadow-sm rounded-4 p-4">
             <p className="text-muted mb-2">Revenue</p>
-            <h3 className="fw-semibold">${(stats.totalRevenue || 0).toLocaleString()}</h3>
+            <h3 className="fw-semibold">{formatCurrency(stats.totalRevenue || 0)}</h3>
           </div>
         </div>
         <div className="col-md-6">
