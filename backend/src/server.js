@@ -89,6 +89,7 @@ const wishlistRoutes = (await import('./routes/wishlist.js')).default;
 const cartRoutes = (await import('./routes/cart.js')).default;
 const reviewRoutes = (await import('./routes/reviews.js')).default;
 const adminRoutes = (await import('./routes/admin.js')).default;
+const paymentRoutes = (await import('./routes/payments.js')).default;
 
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -99,6 +100,7 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/payments', paymentRoutes);
 
 app.use((err, _req, res, _next) => {
   console.error(err);

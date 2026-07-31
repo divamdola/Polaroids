@@ -1,6 +1,5 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { FiCamera, FiAperture, FiShield, FiTruck } from 'react-icons/fi'
 import Button from '../Button/Button'
 import styles from './Hero.module.css'
 
@@ -21,29 +20,6 @@ export default function Hero() {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' } },
   }
-
-  const features = [
-    {
-      icon: FiCamera,
-      title: 'Premium Cameras',
-      description: 'Curated selection of instant cameras for every photographer',
-    },
-    {
-      icon: FiAperture,
-      title: 'Quality Film',
-      description: 'High-quality film for vibrant, lasting memories',
-    },
-    {
-      icon: FiShield,
-      title: 'Authentic Products',
-      description: '100% genuine products with manufacturer warranty',
-    },
-    {
-      icon: FiTruck,
-      title: 'Fast Delivery',
-      description: 'Quick shipping with careful packaging',
-    },
-  ]
 
   return (
     <>
@@ -101,54 +77,6 @@ export default function Hero() {
         <div className={styles.scrollIndicator} aria-hidden="true">
           <span />
           <p>Scroll</p>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className={styles.statsSection}>
-        <div className="container">
-          <div className={styles.statsGrid}>
-            <div className={styles.statItem}>
-              <div className={styles.statNumber}>50K+</div>
-              <div className={styles.statLabel}>Happy Customers</div>
-            </div>
-            <div className={styles.statItem}>
-              <div className={styles.statNumber}>200+</div>
-              <div className={styles.statLabel}>Products</div>
-            </div>
-            <div className={styles.statItem}>
-              <div className={styles.statNumber}>4.9★</div>
-              <div className={styles.statLabel}>Average Rating</div>
-            </div>
-            <div className={styles.statItem}>
-              <div className={styles.statNumber}>24/7</div>
-              <div className={styles.statLabel}>Support</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Feature Cards */}
-      <section className="py-5">
-        <div className="container">
-          <div className={styles.featureCards}>
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className={styles.featureCard}
-              >
-                <div className={styles.featureIcon}>
-                  <feature.icon />
-                </div>
-                <h3 className={styles.featureTitle}>{feature.title}</h3>
-                <p className={styles.featureDescription}>{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
     </>

@@ -2,17 +2,20 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { FiCreditCard, FiShield, FiTruck } from 'react-icons/fi'
+import { FiCreditCard, FiShield, FiTruck, FiLoader } from 'react-icons/fi'
 import Button from '../../components/Button/Button'
 import SectionHeading from '../../components/SectionHeading/SectionHeading'
 import { useStore } from '../../context/StoreContext'
 import { formatCurrency } from '../../utils/formatters'
+import { createRazorpayOrder, initRazorpayCheckout, verifyPayment } from '../../services/payments'
+import axios from 'axios'
 import styles from './Checkout.module.css'
 
 export default function Checkout() {
   const navigate = useNavigate()
-  const { cart, clearCart } = useStore()
-  const [paymentMethod, setPaymentMethod] = useState('card')
+  const { cart, clearCart, user } = useStore()
+  const [paymentMethod, setPaymentMethod] = useState('razorpay')
+  const [isProcessing, setIsProcessing] = useState(false)
   const {
     register,
     handleSubmit,
@@ -23,10 +26,153 @@ export default function Checkout() {
   const tax = subtotal * 0.08
   const grandTotal = subtotal + shipping + tax
 
-  const onSubmit = () => {
-    clearCart()
-    toast.success('Order placed successfully!')
-    navigate('/profile')
+  const handleRazorpayPayment = async (formData) => {
+    try {
+      setIsProcessing(true)
+      
+      // Create Razorpay order
+      const order = await createRazorpayOrder(grandTotal, 'INR')
+      
+      // Initialize Razorpay checkout
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_YOUR_KEY_ID',
+        amount: order.amount,
+        currency: order.currency,
+        name: 'Polaroids Store',
+        description: 'Payment for your order',
+        order_id: order.id,
+        prefill: {
+          name: formData.name,
+          email: formData.email,
+          contact: formData.phone || '',
+        },
+        theme: {
+          color: '#000000',
+        },
+        handler: async (response) => {
+          try {
+            // Verify payment on backend
+            const verification = await verifyPayment({
+              razorpayOrderId: order.id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+            })
+            
+            if (verification.success) {
+              // Create order with payment details
+              await axios.post(
+                `${import.meta.env.VITE_API_BASE_URL}/orders`,
+                {
+                  items: cart.map(item => ({
+                    product: item.id,
+                    title: item.title,
+                    quantity: item.quantity,
+                    price: item.price,
+                    customImages: item.customImages || [],
+                  })),
+                  subtotal,
+                  shipping,
+                  tax,
+                  total: grandTotal,
+                  paymentMethod: 'Razorpay',
+                  paymentStatus: 'Paid',
+                  paymentDetails: {
+                    razorpayOrderId: order.id,
+                    razorpayPaymentId: response.razorpay_payment_id,
+                    razorpaySignature: response.razorpay_signature,
+                    amount: grandTotal,
+                    currency: 'INR',
+                    paidAt: new Date(),
+                  },
+                  shippingAddress: {
+                    name: formData.name,
+                    email: formData.email,
+                    address: formData.address,
+                    city: formData.city,
+                    postalCode: formData.postal,
+                    notes: formData.notes,
+                  },
+                },
+                { withCredentials: true }
+              )
+              
+              clearCart()
+              toast.success('Payment successful! Order placed.')
+              navigate('/profile')
+            }
+          } catch (error) {
+            console.error('Payment verification failed:', error)
+            toast.error('Payment verification failed. Please contact support.')
+          } finally {
+            setIsProcessing(false)
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setIsProcessing(false)
+            toast.info('Payment cancelled')
+          },
+        },
+      }
+      
+      await initRazorpayCheckout(options)
+    } catch (error) {
+      console.error('Payment error:', error)
+      toast.error(error.response?.data?.message || 'Payment failed. Please try again.')
+      setIsProcessing(false)
+    }
+  }
+
+  const handleCODPayment = async (formData) => {
+    try {
+      setIsProcessing(true)
+      
+      // Create order with COD
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/orders`,
+        {
+          items: cart.map(item => ({
+            product: item.id,
+            title: item.title,
+            quantity: item.quantity,
+            price: item.price,
+            customImages: item.customImages || [],
+          })),
+          subtotal,
+          shipping,
+          tax,
+          total: grandTotal,
+          paymentMethod: 'COD',
+          paymentStatus: 'Pending',
+          shippingAddress: {
+            name: formData.name,
+            email: formData.email,
+            address: formData.address,
+            city: formData.city,
+            postalCode: formData.postal,
+            notes: formData.notes,
+          },
+        },
+        { withCredentials: true }
+      )
+      
+      clearCart()
+      toast.success('Order placed successfully with Cash on Delivery!')
+      navigate('/profile')
+    } catch (error) {
+      console.error('Order creation failed:', error)
+      toast.error(error.response?.data?.message || 'Failed to place order. Please try again.')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const onSubmit = async (formData) => {
+    if (paymentMethod === 'razorpay') {
+      await handleRazorpayPayment(formData)
+    } else if (paymentMethod === 'cod') {
+      await handleCODPayment(formData)
+    }
   }
 
   return (
@@ -51,6 +197,11 @@ export default function Checkout() {
                 <input className="form-control rounded-pill" type="email" {...register('email', { required: 'Email is required', pattern: { value: /[^\s@]+@[^\s@]+\.[^\s@]+/, message: 'Enter a valid email' } })} />
                 {errors.email && <p className="small text-danger mt-1">{errors.email.message}</p>}
               </div>
+              <div className="col-md-6">
+                <label className="form-label">Phone</label>
+                <input className="form-control rounded-pill" type="tel" {...register('phone', { required: 'Phone is required for Razorpay payment' })} />
+                {errors.phone && <p className="small text-danger mt-1">{errors.phone.message}</p>}
+              </div>
               <div className="col-12">
                 <label className="form-label">Billing address</label>
                 <input className="form-control rounded-pill" {...register('address', { required: 'Address is required' })} />
@@ -74,17 +225,25 @@ export default function Checkout() {
               <div className="col-12 mt-3">
                 <h5 className="fw-semibold mb-3">Payment method</h5>
                 <div className="d-grid gap-2">
-                  <button type="button" className={`text-start ${styles.paymentOption} ${paymentMethod === 'card' ? styles.paymentOptionActive : ''}`} onClick={() => setPaymentMethod('card')}>
-                    <FiCreditCard className="me-2" /> Credit / Debit Card
+                  <button type="button" className={`text-start ${styles.paymentOption} ${paymentMethod === 'razorpay' ? styles.paymentOptionActive : ''}`} onClick={() => setPaymentMethod('razorpay')}>
+                    <FiCreditCard className="me-2" /> Razorpay (UPI, Cards, Wallets)
                   </button>
                   <button type="button" className={`text-start ${styles.paymentOption} ${paymentMethod === 'cod' ? styles.paymentOptionActive : ''}`} onClick={() => setPaymentMethod('cod')}>
-                    Cash on Delivery (currently unavailable)
+                    Cash on Delivery
                   </button>
                 </div>
               </div>
 
               <div className="col-12">
-                <Button type="submit">Place order</Button>
+                <Button type="submit" disabled={isProcessing}>
+                  {isProcessing ? (
+                    <>
+                      <FiLoader className="me-2 spin" /> Processing...
+                    </>
+                  ) : (
+                    `Pay ${formatCurrency(grandTotal)}`
+                  )}
+                </Button>
               </div>
             </form>
           </div>
