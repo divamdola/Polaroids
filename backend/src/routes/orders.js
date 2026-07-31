@@ -58,7 +58,7 @@ router.get('/:id', requireAuth, async (req, res) => {
 // Create new order
 router.post('/', requireAuth, async (req, res) => {
   try {
-    const { items, shippingAddress, paymentMethod } = req.body;
+    const { items, shippingAddress, paymentMethod, paymentStatus, paymentDetails, subtotal, shipping, tax, total } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: 'Order must contain at least one item' });
@@ -68,26 +68,39 @@ router.post('/', requireAuth, async (req, res) => {
       return res.status(400).json({ message: 'Shipping address is required' });
     }
 
-    // Calculate totals
-    const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const shipping = subtotal > 50 ? 0 : 10; // Free shipping over $50
-    const tax = subtotal * 0.08; // 8% tax
-    const total = subtotal + shipping + tax;
+    // Use provided totals or calculate them
+    const calculatedSubtotal = subtotal || items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const calculatedShipping = shipping !== undefined ? shipping : (calculatedSubtotal > 50 ? 0 : 10);
+    const calculatedTax = tax !== undefined ? tax : (calculatedSubtotal * 0.08);
+    const calculatedTotal = total !== undefined ? total : (calculatedSubtotal + calculatedShipping + calculatedTax);
 
     const orderData = {
       user: req.user._id,
       items,
-      subtotal,
-      shipping,
-      tax,
-      total,
+      subtotal: calculatedSubtotal,
+      shipping: calculatedShipping,
+      tax: calculatedTax,
+      total: calculatedTotal,
       shippingAddress,
-      paymentMethod: paymentMethod || 'Card',
-      status: 'Pending',
+      paymentMethod: paymentMethod || 'COD',
+      status: paymentStatus === 'Paid' ? 'Processing' : 'Pending',
     };
+
+    // Add payment status and details if provided
+    if (paymentStatus) {
+      orderData.paymentStatus = paymentStatus;
+    }
+    if (paymentDetails) {
+      orderData.paymentDetails = paymentDetails;
+    }
+
+    console.log('Creating order with payment status:', paymentStatus);
+    console.log('Order data:', orderData);
 
     if (mongoose.connection.readyState === 1) {
       const order = await Order.create(orderData);
+      console.log('Order created successfully:', order.paymentStatus);
+      console.log('Full created order:', order);
       return res.status(201).json(order);
     }
 

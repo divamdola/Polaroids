@@ -32,24 +32,31 @@ router.post('/verify', requireAuth, async (req, res) => {
       orderId 
     } = req.body;
 
+    console.log('Payment verification request:', { razorpayOrderId, razorpayPaymentId, orderId });
+
     // Verify signature
     const isValidSignature = verifyPaymentSignature(razorpayOrderId, razorpayPaymentId, razorpaySignature);
     
     if (!isValidSignature) {
+      console.error('Invalid payment signature');
       return res.status(400).json({ message: 'Invalid payment signature' });
     }
 
     // Verify payment with Razorpay API
     const payment = await verifyPayment(razorpayOrderId, razorpayPaymentId);
     
+    console.log('Payment from Razorpay:', payment);
+    
     if (payment.status !== 'captured') {
+      console.error('Payment not captured, status:', payment.status);
       return res.status(400).json({ message: 'Payment not captured' });
     }
 
-    // Update order with payment details
+    // Update order with payment details if orderId is provided
     if (orderId) {
       const order = await Order.findById(orderId);
       if (order) {
+        console.log('Updating existing order:', orderId);
         order.paymentStatus = 'Paid';
         order.paymentMethod = 'Razorpay';
         order.paymentDetails = {
@@ -62,6 +69,7 @@ router.post('/verify', requireAuth, async (req, res) => {
         };
         order.status = 'Processing';
         await order.save();
+        console.log('Order updated successfully');
       }
     }
 

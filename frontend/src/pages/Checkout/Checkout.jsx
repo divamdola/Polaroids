@@ -59,58 +59,52 @@ export default function Checkout() {
         },
         handler: async (response) => {
           try {
-            // Verify payment on backend
-            const verification = await verifyPayment({
-              razorpayOrderId: order.id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature,
-            })
-            
-            if (verification.success) {
-              // Create order with payment details
-              await axios.post(
-                `${import.meta.env.VITE_API_BASE_URL}/orders`,
-                {
-                  items: cart.map(item => ({
-                    product: item.id,
-                    title: item.title,
-                    quantity: item.quantity,
-                    price: item.price,
-                    customImages: item.customImages || [],
-                  })),
-                  subtotal,
-                  shipping,
-                  tax,
-                  total: grandTotal,
-                  paymentMethod: 'Razorpay',
-                  paymentStatus: 'Paid',
-                  paymentDetails: {
-                    razorpayOrderId: order.id,
-                    razorpayPaymentId: response.razorpay_payment_id,
-                    razorpaySignature: response.razorpay_signature,
-                    amount: grandTotal,
-                    currency: 'INR',
-                    paidAt: new Date(),
-                  },
-                  shippingAddress: {
-                    name: formData.name,
-                    email: formData.email,
-                    address: formData.address,
-                    city: formData.city,
-                    postalCode: formData.postal,
-                    notes: formData.notes,
-                  },
+            // Create order with payment details directly
+            const orderResponse = await axios.post(
+              `${import.meta.env.VITE_API_BASE_URL}/orders`,
+              {
+                items: cart.map(item => ({
+                  product: item.id,
+                  title: item.title,
+                  quantity: item.quantity,
+                  price: item.price,
+                  customImages: item.customImages || [],
+                })),
+                subtotal,
+                shipping,
+                tax,
+                total: grandTotal,
+                paymentMethod: 'Razorpay',
+                paymentStatus: 'Paid',
+                paymentDetails: {
+                  razorpayOrderId: order.id,
+                  razorpayPaymentId: response.razorpay_payment_id,
+                  razorpaySignature: response.razorpay_signature,
+                  amount: grandTotal,
+                  currency: 'INR',
+                  paidAt: new Date(),
                 },
-                { withCredentials: true }
-              )
-              
-              clearCart()
-              toast.success('Payment successful! Order placed.')
-              navigate('/profile')
-            }
+                shippingAddress: {
+                  name: formData.name,
+                  email: formData.email,
+                  address: formData.address,
+                  city: formData.city,
+                  postalCode: formData.postal,
+                  notes: formData.notes,
+                },
+              },
+              { withCredentials: true }
+            )
+            
+            console.log('Order created with payment status:', orderResponse.data.paymentStatus)
+            console.log('Full order response:', orderResponse.data)
+            
+            clearCart()
+            toast.success('Payment successful! Order placed.')
+            navigate('/profile')
           } catch (error) {
-            console.error('Payment verification failed:', error)
-            toast.error('Payment verification failed. Please contact support.')
+            console.error('Order creation failed:', error)
+            toast.error('Failed to create order. Please contact support.')
           } finally {
             setIsProcessing(false)
           }
@@ -136,7 +130,7 @@ export default function Checkout() {
       setIsProcessing(true)
       
       // Create order with COD
-      await axios.post(
+      const orderResponse = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/orders`,
         {
           items: cart.map(item => ({
@@ -163,6 +157,8 @@ export default function Checkout() {
         },
         { withCredentials: true }
       )
+      
+      console.log('COD Order created with payment status:', orderResponse.data.paymentStatus)
       
       clearCart()
       toast.success('Order placed successfully with Cash on Delivery!')
