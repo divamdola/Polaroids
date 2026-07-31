@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { FiArrowLeft, FiHeart, FiMinus, FiPlus, FiShoppingCart, FiStar, FiX } from 'react-icons/fi'
 import Loader from '../../components/Loader/Loader'
 import Button from '../../components/Button/Button'
@@ -9,6 +9,7 @@ import { useStore } from '../../context/StoreContext'
 import { formatCurrency } from '../../utils/formatters'
 import { getProductById, getProducts } from '../../services/api'
 import { usePageTitle } from '../../hooks/usePageTitle'
+import { toast } from 'react-toastify'
 import styles from './Product.module.css'
 
 const galleryImages = [
@@ -19,6 +20,7 @@ const galleryImages = [
 
 export default function Product() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const { addToCart, toggleWishlist, wishlist } = useStore()
   const [product, setProduct] = useState(null)
   usePageTitle(product?.title || 'Product', product?.description || 'Explore the details of this premium Polaroid product.')
@@ -335,19 +337,46 @@ export default function Product() {
 
               <div className="d-grid gap-2 mb-3">
                 <Button 
-                  onClick={() => addToCart({ 
-                    ...product, 
-                    price: salePrice, 
-                    customImages: uploadedImages.map((img, idx) => ({
-                      ...img,
-                      description: imageDescriptions[idx] || ''
-                    }))
-                  }, quantity)}
+                  onClick={() => {
+                    if (isCustomProduct && uploadedImages.length === 0) {
+                      toast.error('Please upload at least 1 image for this custom product')
+                      return
+                    }
+                    addToCart({ 
+                      ...product, 
+                      price: salePrice, 
+                      customImages: uploadedImages.map((img, idx) => ({
+                        ...img,
+                        description: imageDescriptions[idx] || ''
+                      }))
+                    }, quantity)
+                    toast.success('Added to cart!')
+                  }}
                   disabled={isCustomProduct && uploadedImages.length === 0}
                 >
                   <FiShoppingCart className="me-2" /> Add to cart
                 </Button>
-                <Button variant="outline">Buy now</Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    if (isCustomProduct && uploadedImages.length === 0) {
+                      toast.error('Please upload at least 1 image for this custom product')
+                      return
+                    }
+                    addToCart({ 
+                      ...product, 
+                      price: salePrice, 
+                      customImages: uploadedImages.map((img, idx) => ({
+                        ...img,
+                        description: imageDescriptions[idx] || ''
+                      }))
+                    }, quantity)
+                    navigate('/checkout')
+                  }}
+                  disabled={isCustomProduct && uploadedImages.length === 0}
+                >
+                  Buy now
+                </Button>
               </div>
 
               <div className="d-flex gap-2">

@@ -1,20 +1,42 @@
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { usePageTitle } from '../../hooks/usePageTitle'
-import { FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi'
+import { FiMinus, FiPlus, FiTrash2, FiImage, FiAlertCircle } from 'react-icons/fi'
 import Button from '../../components/Button/Button'
 import SectionHeading from '../../components/SectionHeading/SectionHeading'
 import { useStore } from '../../context/StoreContext'
 import { formatCurrency } from '../../utils/formatters'
+import { toast } from 'react-toastify'
 import styles from './Cart.module.css'
 
 export default function Cart() {
+  const navigate = useNavigate()
   const { cart, removeFromCart, updateQuantity, clearCart } = useStore()
   usePageTitle('Cart', 'Review your selected Polaroid favorites before checkout.')
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const shipping = subtotal > 0 ? 18 : 0
   const tax = subtotal * 0.08
   const grandTotal = subtotal + shipping + tax
+
+  const isCustomProduct = (item) => item.category === 'Mini Polaroids' || item.category === 'Collages'
+  const hasRequiredImages = (item) => item.customImages && item.customImages.length > 0
+
+  const handleCheckout = (e) => {
+    e.preventDefault()
+    
+    // Check if custom products have required images
+    const customProductsMissingImages = cart.filter(item => 
+      isCustomProduct(item) && !hasRequiredImages(item)
+    )
+    
+    if (customProductsMissingImages.length > 0) {
+      const missingItems = customProductsMissingImages.map(item => item.title).join(', ')
+      toast.error(`Please upload images for: ${missingItems}`)
+      return
+    }
+    
+    navigate('/checkout')
+  }
 
   return (
     <section className="container py-5">
@@ -41,7 +63,19 @@ export default function Cart() {
                   <div className="col-md-5">
                     <h5 className="fw-semibold mb-2">{item.title}</h5>
                     <p className="mb-2 text-muted">{formatCurrency(item.price)}</p>
-                    <p className="mb-0 small text-muted">In stock • Ready to ship</p>
+                    {isCustomProduct(item) ? (
+                      hasRequiredImages(item) ? (
+                        <p className="mb-0 small text-success">
+                          <FiImage className="me-1" /> {item.customImages.length} image{item.customImages.length > 1 ? 's' : ''} uploaded
+                        </p>
+                      ) : (
+                        <p className="mb-0 small text-danger">
+                          <FiAlertCircle className="me-1" /> Images required
+                        </p>
+                      )
+                    ) : (
+                      <p className="mb-0 small text-muted">In stock • Ready to ship</p>
+                    )}
                   </div>
                   <div className="col-md-2">
                     <div className="d-flex align-items-center gap-2">
@@ -66,7 +100,7 @@ export default function Cart() {
 
             <div className="d-flex flex-wrap gap-2 mt-3">
               <Link to="/shop"><Button variant="outline">Continue shopping</Button></Link>
-              <Link to="/checkout"><Button>Proceed to checkout</Button></Link>
+              <Button onClick={handleCheckout}>Proceed to checkout</Button>
             </div>
           </div>
           <div className="col-lg-4">
@@ -81,7 +115,7 @@ export default function Cart() {
               </div>
               <hr />
               <div className="d-flex justify-content-between fw-bold fs-5"><span>Grand total</span><span>{formatCurrency(grandTotal)}</span></div>
-              <Link to="/checkout" className="d-block mt-4"><Button className="w-100">Proceed to checkout</Button></Link>
+              <button className="btn btn-dark w-100 mt-4 rounded-pill" onClick={handleCheckout}>Proceed to checkout</button>
             </motion.div>
           </div>
         </div>

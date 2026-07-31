@@ -176,6 +176,18 @@ export default function Checkout() {
   }
 
   const onSubmit = async (formData) => {
+    // Validate custom products have required images
+    const customProducts = cart.filter(item => 
+      item.category === 'Mini Polaroids' || item.category === 'Collages'
+    )
+    
+    for (const item of customProducts) {
+      if (!item.customImages || item.customImages.length === 0) {
+        toast.error(`Please upload images for "${item.title}" before checkout`)
+        return
+      }
+    }
+
     if (paymentMethod === 'razorpay') {
       await handleRazorpayPayment(formData)
     } else if (paymentMethod === 'cod') {
