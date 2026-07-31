@@ -302,10 +302,12 @@ export default function Shop() {
       </div>
 
       {/* Products Grid */}
-      {isLoading ? (
-        <ShopSkeleton />
-      ) : filteredProducts.length === 0 ? (
-        <NoProducts onClearFilters={resetFilters} />
+      {filteredProducts.length === 0 ? (
+        isLoading ? (
+          <ShopSkeleton />
+        ) : (
+          <NoProducts onClearFilters={resetFilters} />
+        )
       ) : (
         <>
           <div className={`row g-4 ${viewMode === 'list' ? 'flex-column' : ''}`}>

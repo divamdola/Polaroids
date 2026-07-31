@@ -1,5 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { toast } from 'react-toastify'
 import { getCurrentUser, getProducts, loginUser, logoutUser, registerUser } from '../services/api'
 
@@ -10,25 +9,22 @@ export function StoreProvider({ children }) {
     if (typeof window === 'undefined') {
       return []
     }
-
     return JSON.parse(localStorage.getItem('polaroid-cart') || '[]')
   })
   const [wishlist, setWishlist] = useState(() => {
     if (typeof window === 'undefined') {
       return []
     }
-
     return JSON.parse(localStorage.getItem('polaroid-wishlist') || '[]')
   })
   const [user, setUser] = useState(() => {
     if (typeof window === 'undefined') {
       return null
     }
-
     return JSON.parse(localStorage.getItem('polaroid-user') || 'null')
   })
   const [products, setProducts] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -59,7 +55,7 @@ export function StoreProvider({ children }) {
 
   useEffect(() => {
     fetchProducts()
-  }, [])
+  }, [fetchProducts])
 
   useEffect(() => {
     const restoreSession = async () => {
@@ -69,7 +65,6 @@ export function StoreProvider({ children }) {
           setUser(response.user)
         }
       } catch (error) {
-        // If cookie-based auth fails, try to use localStorage token
         const localToken = localStorage.getItem('authToken')
         if (localToken) {
           try {
@@ -86,20 +81,17 @@ export function StoreProvider({ children }) {
         }
       }
     }
-
     restoreSession()
   }, [])
 
   const addToCart = useCallback((product, quantity = 1) => {
     setCart((current) => {
       const existingItem = current.find((item) => item.id === product.id)
-
       if (existingItem) {
         return current.map((item) =>
           item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item,
         )
       }
-
       return [...current, { ...product, quantity }]
     })
     toast.success(`${product.title} added to your cart.`)
@@ -131,12 +123,9 @@ export function StoreProvider({ children }) {
     try {
       const response = await loginUser(userData)
       setUser(response.user)
-      
-      // Store token in localStorage as fallback for cross-origin
       if (response.token) {
         localStorage.setItem('authToken', response.token)
       }
-      
       toast.success(`Welcome back, ${response.user.name}!`)
       return response.user
     } catch (error) {
@@ -159,7 +148,7 @@ export function StoreProvider({ children }) {
 
   const register = useCallback(async (userData) => {
     try {
-      const response = await registerUser(userData)
+      const response = registerUser(userData)
       setUser(response.user)
       toast.success(`Thanks for joining, ${response.user.name}!`)
       return response.user
@@ -169,40 +158,35 @@ export function StoreProvider({ children }) {
     }
   }, [])
 
-  const cartCount = useMemo(() => cart.reduce((sum, item) => sum + item.quantity, 0), [cart])
-  const wishlistCount = useMemo(() => wishlist.length, [wishlist])
+  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0)
+  const wishlistCount = wishlist.length
 
-  const value = useMemo(
-    () => ({
-      cart,
-      wishlist,
-      products,
-      user,
-      isLoading,
-      error,
-      addToCart,
-      removeFromCart,
-      updateQuantity,
-      clearCart,
-      toggleWishlist,
-      login,
-      logout,
-      register,
-      cartCount,
-      wishlistCount,
-    }),
-    [cart, wishlist, products, user, isLoading, error, addToCart, removeFromCart, updateQuantity, clearCart, toggleWishlist, login, logout, register, cartCount, wishlistCount],
-  )
+  const value = {
+    cart,
+    wishlist,
+    products,
+    user,
+    isLoading,
+    error,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    toggleWishlist,
+    login,
+    logout,
+    register,
+    cartCount,
+    wishlistCount,
+  }
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>
 }
 
 export function useStore() {
   const context = useContext(StoreContext)
-
   if (!context) {
     throw new Error('useStore must be used inside a StoreProvider')
   }
-
   return context
 }
