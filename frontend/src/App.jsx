@@ -9,14 +9,14 @@ import { StoreProvider } from './context/StoreContext'
 
 function App() {
   return (
+    <BrowserRouter>
     <StoreProvider>
-      <BrowserRouter>
         <div className="app-shell">
           <AppRoutes />
           <ToastContainer position="bottom-right" theme="light" />
         </div>
-      </BrowserRouter>
     </StoreProvider>
+    </BrowserRouter>
   )
 }
 
