@@ -1,10 +1,9 @@
 import { motion } from 'framer-motion'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { FiGrid, FiList, FiSearch, FiSliders, FiX, FiCheck } from 'react-icons/fi'
 import { usePageTitle } from '../../hooks/usePageTitle'
 import ProductCard from '../../components/ProductCard/ProductCard'
 import SectionHeading from '../../components/SectionHeading/SectionHeading'
-import CollectionBanner from '../../components/CollectionBanner/CollectionBanner'
 import ShopSkeleton from '../../components/ShopSkeleton/ShopSkeleton'
 import NoProducts from '../../components/NoProducts/NoProducts'
 import Pagination from '../../components/Pagination/Pagination'
@@ -47,6 +46,11 @@ export default function Shop() {
   const [viewMode, setViewMode] = useState('grid')
   const [page, setPage] = useState(1)
   const [showFilters, setShowFilters] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Update category counts
   const updatedCategories = useMemo(() => {
@@ -111,6 +115,10 @@ export default function Shop() {
     if (availability !== 'all') count++
     return count
   }, [search, category, priceRange, availability])
+
+  if (!isMounted) {
+    return <div className="container py-5"><div className="spinner-border text-primary" role="status"></div></div>
+  }
 
   return (
     <section className="container py-5">
@@ -342,8 +350,6 @@ export default function Shop() {
           )}
         </>
       )}
-
-      <CollectionBanner />
     </section>
   )
 }
