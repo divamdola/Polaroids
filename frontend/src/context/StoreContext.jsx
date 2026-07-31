@@ -59,7 +59,7 @@ export function StoreProvider({ children }) {
 
   useEffect(() => {
     fetchProducts()
-  }, [fetchProducts])
+  }, [])
 
   useEffect(() => {
     const restoreSession = async () => {

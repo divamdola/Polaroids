@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { useMemo, useState } from 'react'
 import { FiGrid, FiList, FiSearch, FiSliders, FiX, FiCheck } from 'react-icons/fi'
 import { usePageTitle } from '../../hooks/usePageTitle'
@@ -218,12 +217,7 @@ export default function Shop() {
 
         {/* Additional Filters */}
         {showFilters && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mt-4 pt-4 border-top"
-          >
+          <div className="mt-4 pt-4 border-top">
             <div className="row g-3">
               <div className="col-lg-3">
                 <label className="form-label small text-muted">Availability</label>
@@ -247,7 +241,7 @@ export default function Shop() {
                 </button>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
 
@@ -314,25 +308,16 @@ export default function Shop() {
         <NoProducts onClearFilters={resetFilters} />
       ) : (
         <>
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
-            }}
-            className={`row g-4 ${viewMode === 'list' ? 'flex-column' : ''}`}
-          >
+          <div className={`row g-4 ${viewMode === 'list' ? 'flex-column' : ''}`}>
             {paginatedProducts.map((product) => (
-              <motion.div
+              <div
                 key={product.id}
-                variants={{ hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } }}
                 className={viewMode === 'grid' ? 'col-md-6 col-lg-4 col-xl-3' : 'col-12'}
               >
                 <ProductCard product={product} variant={viewMode === 'list' ? 'compact' : 'default'} />
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
           
           {totalPages > 1 && (
             <div className="mt-5">
