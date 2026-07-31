@@ -46,6 +46,13 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
+// Serve uploaded files statically
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
 // Add a middleware to ensure proper cookie handling
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', 'true');
@@ -96,40 +103,69 @@ const seedInitialData = async () => {
     if (productCount === 0) {
       await Product.insertMany([
         {
-          title: 'Polaroid OneStep 2',
-          slug: 'polaroid-onestep-2',
-          description: 'A compact instant camera with a timeless design and bold color palette.',
-          price: 129,
-          salePrice: 119,
-          category: 'Cameras',
+          title: 'Mini Polaroids - 6 Images',
+          slug: 'mini-polaroids-6-images',
+          description: 'Create your own mini polaroid set with 6 of your favorite photos. Upload your images and add personal descriptions for each memory.',
+          price: 299,
+          category: 'Mini Polaroids',
           image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=900&q=80',
-          hoverImage: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=900&q=80',
-          rating: { rate: 4.7, count: 144 },
-          stock: 24,
+          rating: { rate: 4.9, count: 144 },
+          stock: 50,
           stockStatus: 'In stock',
           isFeatured: true,
+          variants: [
+            { name: '6 Images', price: 299, imageCount: 6 },
+            { name: '12 Images', price: 499, imageCount: 12 }
+          ],
+          customImages: []
         },
         {
-          title: 'Color Film Pack',
-          slug: 'color-film-pack',
-          description: 'High-quality film designed for vibrant daylight captures and rich contrast.',
-          price: 24,
-          category: 'Accessories',
-          image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80',
-          rating: { rate: 4.6, count: 88 },
-          stock: 56,
-          stockStatus: 'In stock',
-        },
-        {
-          title: 'Canvas Camera Bag',
-          slug: 'canvas-camera-bag',
-          description: 'Protect your camera with a sleek and durable everyday carry bag.',
-          price: 78,
-          category: 'Bags',
+          title: 'Mini Polaroids - 12 Images',
+          slug: 'mini-polaroids-12-images',
+          description: 'Create your own mini polaroid set with 12 of your favorite photos. Upload your images and add personal descriptions for each memory.',
+          price: 499,
+          category: 'Mini Polaroids',
           image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=900&q=80',
-          rating: { rate: 4.8, count: 132 },
-          stock: 18,
+          rating: { rate: 4.8, count: 88 },
+          stock: 50,
           stockStatus: 'In stock',
+          variants: [
+            { name: '6 Images', price: 299, imageCount: 6 },
+            { name: '12 Images', price: 499, imageCount: 12 }
+          ],
+          customImages: []
+        },
+        {
+          title: 'Photo Collage - 6 Images',
+          slug: 'photo-collage-6-images',
+          description: 'Transform your photos into a beautiful collage with 6 images. Upload your photos and add descriptions to create a personalized masterpiece.',
+          price: 349,
+          category: 'Collages',
+          image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=900&q=80',
+          rating: { rate: 4.7, count: 132 },
+          stock: 50,
+          stockStatus: 'In stock',
+          variants: [
+            { name: '6 Images', price: 349, imageCount: 6 },
+            { name: '12 Images', price: 599, imageCount: 12 }
+          ],
+          customImages: []
+        },
+        {
+          title: 'Photo Collage - 12 Images',
+          slug: 'photo-collage-12-images',
+          description: 'Transform your photos into a beautiful collage with 12 images. Upload your photos and add descriptions to create a personalized masterpiece.',
+          price: 599,
+          category: 'Collages',
+          image: 'https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=900&q=80',
+          rating: { rate: 4.6, count: 120 },
+          stock: 50,
+          stockStatus: 'In stock',
+          variants: [
+            { name: '6 Images', price: 349, imageCount: 6 },
+            { name: '12 Images', price: 599, imageCount: 12 }
+          ],
+          customImages: []
         },
       ]);
     }

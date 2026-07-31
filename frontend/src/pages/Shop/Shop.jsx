@@ -12,11 +12,8 @@ import { useStore } from '../../context/StoreContext'
 
 const categories = [
   { id: 'all', name: 'All Products', count: 0 },
-  { id: 'cameras', name: 'Instant Cameras', count: 0 },
-  { id: 'film', name: 'Film & Accessories', count: 0 },
-  { id: 'lenses', name: 'Lenses', count: 0 },
-  { id: 'albums', name: 'Albums & Storage', count: 0 },
-  { id: 'bags', name: 'Bags & Cases', count: 0 },
+  { id: 'mini-polaroids', name: 'Mini Polaroids', count: 0 },
+  { id: 'collages', name: 'Collages', count: 0 },
 ]
 
 const priceRanges = [

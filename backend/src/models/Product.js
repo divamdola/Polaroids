@@ -10,6 +10,17 @@ const productSchema = new mongoose.Schema(
     category: { type: String, required: true, trim: true },
     image: { type: String, default: '' },
     hoverImage: { type: String, default: '' },
+    // For custom products with multiple image uploads
+    customImages: [{
+      image: { type: String, required: true },
+      description: { type: String, default: '' }
+    }],
+    // Product variants (e.g., 6 images vs 12 images)
+    variants: [{
+      name: { type: String, required: true },
+      price: { type: Number, required: true },
+      imageCount: { type: Number, required: true }
+    }],
     rating: {
       rate: { type: Number, default: 4.5 },
       count: { type: Number, default: 120 },
