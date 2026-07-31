@@ -5,42 +5,13 @@ import { FiHeart, FiShoppingCart, FiMenu, FiSearch, FiUser, FiMoon, FiSun, FiX, 
 import { useStore } from '../../context/StoreContext'
 import styles from './Navbar.module.css'
 
-const shopCategories = [
-  { name: 'Instant Cameras', path: '/shop?category=cameras' },
-  { name: 'Film & Accessories', path: '/shop?category=film' },
-  { name: 'Lenses', path: '/shop?category=lenses' },
-  { name: 'Albums & Storage', path: '/shop?category=albums' },
-  { name: 'Bags & Cases', path: '/shop?category=bags' },
-]
 
-const collectionHighlights = [
-  { 
-    title: 'New Arrivals', 
-    path: '/collections?sort=newest', 
-    text: 'Fresh launches for the season.',
-    image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=400&q=80'
-  },
-  { 
-    title: 'Editorial Picks', 
-    path: '/shop?sort=featured', 
-    text: 'The latest favorites curated for everyday style.',
-    image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=400&q=80'
-  },
-  { 
-    title: 'Giftables', 
-    path: '/collections?category=gifts', 
-    text: 'Thoughtful accessories and keepsakes.',
-    image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80'
-  },
-]
 
 export default function Navbar() {
   const { cartCount, wishlistCount, user, logout } = useStore()
   const location = useLocation()
   const navigate = useNavigate()
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isShopOpen, setIsShopOpen] = useState(false)
-  const [isCollectionsOpen, setIsCollectionsOpen] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -78,7 +49,7 @@ export default function Navbar() {
         <div className="container">
           <p className="mb-0">
             Free shipping on orders over ₹50 | 
-            <Link to="/collections" className="ms-2">Shop New Arrivals →</Link>
+            <Link to="/shop" className="ms-2">Shop Now →</Link>
           </p>
         </div>
       </div>
@@ -131,46 +102,14 @@ export default function Navbar() {
                 </NavLink>
               </li>
               
-              <li className={`nav-item ${styles.dropdownWrapper}`} 
-                  onMouseEnter={() => setIsShopOpen(true)} 
-                  onMouseLeave={() => setIsShopOpen(false)}>
-                <button type="button" className={`${styles.dropdownToggle} ${styles.link}`} onClick={() => setIsShopOpen((value) => !value)}>
+              <li className="nav-item">
+                <NavLink 
+                  className={({ isActive }) => `nav-link ${styles.link} ${isActive ? styles.linkActive : ''}`} 
+                  to="/shop" 
+                  onClick={() => setIsMobileOpen(false)}
+                >
                   Shop
-                </button>
-                <div className={`${styles.dropdownMenu} ${isShopOpen ? styles.dropdownMenuVisible : ''}`}>
-                  {shopCategories.map((category) => (
-                    <Link key={category.name} to={category.path} className={styles.dropdownItem} onClick={() => setIsShopOpen(false)}>
-                      {category.name}
-                    </Link>
-                  ))}
-                </div>
-              </li>
-
-              <li className={`nav-item ${styles.dropdownWrapper}`} 
-                  onMouseEnter={() => setIsCollectionsOpen(true)} 
-                  onMouseLeave={() => setIsCollectionsOpen(false)}>
-                <button type="button" className={`${styles.dropdownToggle} ${styles.link}`} onClick={() => setIsCollectionsOpen((value) => !value)}>
-                  Collections
-                </button>
-                <div className={`${styles.megaMenu} ${isCollectionsOpen ? styles.megaMenuVisible : ''}`}>
-                  <div className="row g-3 align-items-stretch">
-                    {collectionHighlights.map((item) => (
-                      <div key={item.title} className="col-md-4">
-                        <Link to={item.path} className={styles.megaCard} onClick={() => setIsCollectionsOpen(false)}>
-                          <div className="mb-2" style={{ 
-                            height: '120px', 
-                            backgroundImage: `url(${item.image})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            borderRadius: 'var(--radius-md)'
-                          }} />
-                          <h6 className="fw-semibold mb-2">{item.title}</h6>
-                          <p className="small mb-0">{item.text}</p>
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                </NavLink>
               </li>
 
               <li className="nav-item">
