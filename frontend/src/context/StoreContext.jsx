@@ -102,7 +102,7 @@ export function StoreProvider({ children }) {
 
       return [...current, { ...product, quantity }]
     })
-    toast.success(`₹{product.title} added to your cart.`)
+    toast.success(`${product.title} added to your cart.`)
   }, [])
 
   const removeFromCart = useCallback((id) => {
@@ -161,7 +161,7 @@ export function StoreProvider({ children }) {
     try {
       const response = await registerUser(userData)
       setUser(response.user)
-      toast.success(`Thanks for joining, ₹{response.user.name}!`)
+      toast.success(`Thanks for joining, ${response.user.name}!`)
       return response.user
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Unable to create account.')

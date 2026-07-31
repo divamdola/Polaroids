@@ -29,7 +29,7 @@ const AdminDashboard = memo(function AdminDashboard() {
         <div className="col-md-6">
           <div className="card border-0 shadow-sm rounded-4 p-4">
             <p className="text-muted mb-2">Revenue</p>
-            <h3 className="fw-semibold">₹{(stats.totalRevenue || 0).toLocaleString()}</h3>
+            <h3 className="fw-semibold">${(stats.totalRevenue || 0).toLocaleString()}</h3>
           </div>
         </div>
         <div className="col-md-6">

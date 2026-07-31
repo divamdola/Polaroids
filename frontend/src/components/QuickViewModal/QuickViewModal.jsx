@@ -68,8 +68,8 @@ export default function QuickViewModal({ product, isOpen, onClose, onAddToCart, 
                     <img
                       key={index}
                       src={img}
-                      alt={`₹{product.title} view ₹{index + 1}`}
-                      className={`₹{styles.thumbnail} ₹{index === selectedImage ? styles.active : ''}`}
+                      alt={`${product.title} view ${index + 1}`}
+                      className={`${styles.thumbnail} ${index === selectedImage ? styles.active : ''}`}
                       onClick={() => setSelectedImage(index)}
                     />
                   ))}
@@ -78,7 +78,7 @@ export default function QuickViewModal({ product, isOpen, onClose, onAddToCart, 
 
               {/* Product Info */}
               <div className={styles.infoSection}>
-                {showSale && <span className={`₹{styles.badge} ₹{styles.saleBadge}`}>Sale</span>}
+                {showSale && <span className={`${styles.badge} ${styles.saleBadge}`}>Sale</span>}
                 <p className={styles.category}>{product.category}</p>
                 <h2 className={styles.title}>{product.title}</h2>
                 <p className={styles.description}>{product.description}</p>
@@ -113,10 +113,10 @@ export default function QuickViewModal({ product, isOpen, onClose, onAddToCart, 
                     {colors.map((color, index) => (
                       <button
                         key={color}
-                        className={`₹{styles.colorOption} ₹{index === selectedColor ? styles.active : ''}`}
+                        className={`${styles.colorOption} ${index === selectedColor ? styles.active : ''}`}
                         style={{ backgroundColor: color.toLowerCase() }}
                         onClick={() => setSelectedColor(index)}
-                        aria-label={`Select ₹{color}`}
+                        aria-label={`Select ${color}`}
                       />
                     ))}
                   </div>
@@ -129,7 +129,7 @@ export default function QuickViewModal({ product, isOpen, onClose, onAddToCart, 
                     {sizes.map((size) => (
                       <button
                         key={size}
-                        className={`₹{styles.sizeOption} ₹{size === sizes[selectedSize] ? styles.active : ''}`}
+                        className={`${styles.sizeOption} ${size === sizes[selectedSize] ? styles.active : ''}`}
                         onClick={() => setSelectedSize(sizes.indexOf(size))}
                       >
                         {size}
@@ -153,8 +153,8 @@ export default function QuickViewModal({ product, isOpen, onClose, onAddToCart, 
                 </div>
 
                 {/* Stock Status */}
-                <p className={`₹{styles.stockStatus} ₹{product.stock > 0 ? styles.inStock : styles.outOfStock}`}>
-                  {product.stock > 0 ? `₹{product.stock} in stock` : 'Out of stock'}
+                <p className={`${styles.stockStatus} ${product.stock > 0 ? styles.inStock : styles.outOfStock}`}>
+                  {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
                 </p>
 
                 {/* Actions */}
@@ -168,7 +168,7 @@ export default function QuickViewModal({ product, isOpen, onClose, onAddToCart, 
                     Add to Cart
                   </button>
                   <button
-                    className={`₹{styles.wishlistButton} ₹{isWishlisted ? 'active' : ''}`}
+                    className={`${styles.wishlistButton} ${isWishlisted ? 'active' : ''}`}
                     onClick={() => onToggleWishlist(product)}
                     aria-label="Toggle wishlist"
                   >

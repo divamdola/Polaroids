@@ -57,12 +57,12 @@ export default function Hero() {
           <div className={styles.overlay} />
         </motion.div>
 
-        <div className={`container h-100 d-flex align-items-center ₹{styles.contentWrap}`}>
+        <div className={`container h-100 d-flex align-items-center ${styles.contentWrap}`}>
           <motion.div variants={containerVariants} initial="hidden" animate="visible" className="row align-items-center g-5 w-100">
-            <motion.div variants={itemVariants} className={`col-lg-7 ₹{styles.copy}`}>
-              <p className={`fw-semibold mb-3 ₹{styles.eyebrow}`}>Instant memories, beautifully made</p>
-              <h1 className={`mb-4 ₹{styles.title}`}>Photography that feels timeless, tactile, and true.</h1>
-              <p className={`mb-4 ₹{styles.text}`}>
+            <motion.div variants={itemVariants} className={`col-lg-7 ${styles.copy}`}>
+              <p className={`fw-semibold mb-3 ${styles.eyebrow}`}>Instant memories, beautifully made</p>
+              <h1 className={`mb-4 ${styles.title}`}>Photography that feels timeless, tactile, and true.</h1>
+              <p className={`mb-4 ${styles.text}`}>
                 Discover refined instant cameras, elevated accessories, and collector-worthy essentials designed for modern storytelling.
               </p>
               <div className="d-flex flex-wrap gap-3">
@@ -81,7 +81,7 @@ export default function Hero() {
                 animate={{ opacity: 1, scale: 1 }} 
                 whileHover={{ y: -6, scale: 1.01 }} 
                 transition={{ type: 'spring', stiffness: 120, damping: 16 }} 
-                className={`₹{styles.imageCard} p-3 p-lg-4`}
+                className={`${styles.imageCard} p-3 p-lg-4`}
               >
                 <img
                   src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=1200&q=80"
@@ -89,7 +89,7 @@ export default function Hero() {
                   className={styles.image}
                   loading="eager"
                 />
-                <div className={`mt-3 p-3 ₹{styles.glassPanel}`}>
+                <div className={`mt-3 p-3 ${styles.glassPanel}`}>
                   <p className="fw-semibold mb-1">Limited edition films</p>
                   <p className="mb-0 text-muted">Crafted for rich tones and remarkable contrast.</p>
                 </div>

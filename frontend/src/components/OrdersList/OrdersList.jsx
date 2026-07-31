@@ -16,7 +16,7 @@ export default function OrdersList() {
   const fetchOrders = async () => {
     try {
       setLoading(true)
-      const response = await axios.get(`₹{import.meta.env.VITE_API_BASE_URL}/orders/my-orders`, { withCredentials: true })
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/orders/my-orders`, { withCredentials: true })
       setOrders(response.data || [])
     } catch (error) {
       console.error('Failed to fetch orders:', error)
@@ -113,9 +113,9 @@ export default function OrdersList() {
                         <span className="fw-semibold">#{order._id?.slice(-6) || order._id}</span>
                       </td>
                       <td>{formatDate(order.createdAt)}</td>
-                      <td>₹{order.total?.toFixed(2) || '0.00'}</td>
+                      <td>${order.total?.toFixed(2) || '0.00'}</td>
                       <td>
-                        <span className={`badge rounded-pill ₹{getStatusColor(order.status)}`}>
+                        <span className={`badge rounded-pill ${getStatusColor(order.status)}`}>
                           {order.status}
                         </span>
                       </td>
@@ -133,7 +133,7 @@ export default function OrdersList() {
                       </td>
                     </tr>
                     {expandedOrders[order._id] && (
-                      <tr key={`timeline-₹{order._id}`}>
+                      <tr key={`timeline-${order._id}`}>
                         <td colSpan="5" className="p-3">
                           <OrderTimeline 
                             status={order.status} 

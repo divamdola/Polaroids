@@ -20,7 +20,7 @@ export default function Cart() {
     <section className="container py-5">
       <SectionHeading eyebrow="Your bag" title="Your cart" text="A calm place for your selected favorites before checkout." />
       {cart.length === 0 ? (
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className={`text-center ₹{styles.emptyState}`}>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className={`text-center ${styles.emptyState}`}>
           <h4 className="fw-semibold mb-3">Your cart is empty</h4>
           <p className="text-muted mb-4">Add a few favorite pieces and they’ll appear here.</p>
           <Link to="/shop"><Button>Continue shopping</Button></Link>
@@ -33,7 +33,7 @@ export default function Cart() {
               <button type="button" className="btn btn-outline-dark rounded-pill btn-sm" onClick={clearCart}>Clear cart</button>
             </div>
             {cart.map((item) => (
-              <motion.div key={item.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className={`mb-3 ₹{styles.cartItem}`}>
+              <motion.div key={item.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className={`mb-3 ${styles.cartItem}`}>
                 <div className="row align-items-center g-3">
                   <div className="col-md-3">
                     <img src={item.image} alt={item.title} className={styles.image} />

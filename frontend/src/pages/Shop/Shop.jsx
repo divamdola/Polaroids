@@ -190,14 +190,14 @@ export default function Shop() {
             <div className="btn-group flex-grow-1" role="group">
               <button 
                 type="button" 
-                className={`btn btn-sm ₹{viewMode === 'grid' ? 'btn-dark' : 'btn-outline-dark'}`} 
+                className={`btn btn-sm ${viewMode === 'grid' ? 'btn-dark' : 'btn-outline-dark'}`} 
                 onClick={() => setViewMode('grid')}
               >
                 <FiGrid />
               </button>
               <button 
                 type="button" 
-                className={`btn btn-sm ₹{viewMode === 'list' ? 'btn-dark' : 'btn-outline-dark'}`} 
+                className={`btn btn-sm ${viewMode === 'list' ? 'btn-dark' : 'btn-outline-dark'}`} 
                 onClick={() => setViewMode('list')}
               >
                 <FiList />
@@ -322,7 +322,7 @@ export default function Shop() {
               hidden: { opacity: 0 },
               visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
             }}
-            className={`row g-4 ₹{viewMode === 'list' ? 'flex-column' : ''}`}
+            className={`row g-4 ${viewMode === 'list' ? 'flex-column' : ''}`}
           >
             {paginatedProducts.map((product) => (
               <motion.div

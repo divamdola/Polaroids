@@ -59,7 +59,7 @@ export default function OrderTimeline({ status = 'Pending', orderDate }) {
       </div>
 
       {isCancelled ? (
-        <div className={`₹{styles.cancelledMessage} alert alert-danger`}>
+        <div className={`${styles.cancelledMessage} alert alert-danger`}>
           <FiClock className={styles.cancelledIcon} />
           <div>
             <strong>Order Cancelled</strong>
@@ -77,14 +77,14 @@ export default function OrderTimeline({ status = 'Pending', orderDate }) {
             return (
               <React.Fragment key={step.key}>
                 <motion.div
-                  className={`₹{styles.timelineItem} ₹{isCompleted ? styles.completed : ''} ₹{isCurrent ? styles.current : ''} ₹{isPending ? styles.pending : ''}`}
+                  className={`${styles.timelineItem} ${isCompleted ? styles.completed : ''} ${isCurrent ? styles.current : ''} ${isPending ? styles.pending : ''}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
                 <div className={styles.timelineIcon}>
                   <motion.div
-                    className={`₹{styles.iconWrapper} ₹{isCompleted ? styles.iconCompleted : ''} ₹{isCurrent ? styles.iconCurrent : ''} ₹{isPending ? styles.iconPending : ''}`}
+                    className={`${styles.iconWrapper} ${isCompleted ? styles.iconCompleted : ''} ${isCurrent ? styles.iconCurrent : ''} ${isPending ? styles.iconPending : ''}`}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ delay: index * 0.1 + 0.2 }}
@@ -97,7 +97,7 @@ export default function OrderTimeline({ status = 'Pending', orderDate }) {
                   </motion.div>
                   {index < orderSteps.length - 1 && (
                     <motion.div
-                      className={`₹{styles.timelineLine} ₹{isCompleted ? styles.lineCompleted : ''}`}
+                      className={`${styles.timelineLine} ${isCompleted ? styles.lineCompleted : ''}`}
                       initial={{ width: 0 }}
                       animate={{ width: '100%' }}
                       transition={{ delay: index * 0.1 + 0.3, duration: 0.5 }}

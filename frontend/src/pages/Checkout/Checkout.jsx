@@ -74,10 +74,10 @@ export default function Checkout() {
               <div className="col-12 mt-3">
                 <h5 className="fw-semibold mb-3">Payment method</h5>
                 <div className="d-grid gap-2">
-                  <button type="button" className={`text-start ₹{styles.paymentOption} ₹{paymentMethod === 'card' ? styles.paymentOptionActive : ''}`} onClick={() => setPaymentMethod('card')}>
+                  <button type="button" className={`text-start ${styles.paymentOption} ${paymentMethod === 'card' ? styles.paymentOptionActive : ''}`} onClick={() => setPaymentMethod('card')}>
                     <FiCreditCard className="me-2" /> Credit / Debit Card
                   </button>
-                  <button type="button" className={`text-start ₹{styles.paymentOption} ₹{paymentMethod === 'cod' ? styles.paymentOptionActive : ''}`} onClick={() => setPaymentMethod('cod')}>
+                  <button type="button" className={`text-start ${styles.paymentOption} ${paymentMethod === 'cod' ? styles.paymentOptionActive : ''}`} onClick={() => setPaymentMethod('cod')}>
                     Cash on Delivery (currently unavailable)
                   </button>
                 </div>

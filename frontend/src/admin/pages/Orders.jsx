@@ -175,7 +175,7 @@ const Orders = memo(function Orders() {
                         </div>
                       </td>
                       <td>
-                        <span className="fw-semibold">₹{order.total?.toFixed(2) || '0.00'}</span>
+                        <span className="fw-semibold">${order.total?.toFixed(2) || '0.00'}</span>
                       </td>
                       <td>
                         <span className={`badge ${getStatusColor(order.status)}`}>
@@ -269,19 +269,19 @@ const Orders = memo(function Orders() {
                         <div className="card-body">
                           <div className="d-flex justify-content-between mb-2">
                             <span>Subtotal:</span>
-                            <span>₹{selectedOrder.subtotal?.toFixed(2) || '0.00'}</span>
+                            <span>${selectedOrder.subtotal?.toFixed(2) || '0.00'}</span>
                           </div>
                           <div className="d-flex justify-content-between mb-2">
                             <span>Shipping:</span>
-                            <span>₹{selectedOrder.shipping?.toFixed(2) || '0.00'}</span>
+                            <span>${selectedOrder.shipping?.toFixed(2) || '0.00'}</span>
                           </div>
                           <div className="d-flex justify-content-between mb-2">
                             <span>Tax:</span>
-                            <span>₹{selectedOrder.tax?.toFixed(2) || '0.00'}</span>
+                            <span>${selectedOrder.tax?.toFixed(2) || '0.00'}</span>
                           </div>
                           <div className="d-flex justify-content-between fw-bold border-top pt-2">
                             <span>Total:</span>
-                            <span>₹{selectedOrder.total?.toFixed(2) || '0.00'}</span>
+                            <span>${selectedOrder.total?.toFixed(2) || '0.00'}</span>
                           </div>
                         </div>
                       </div>
@@ -303,10 +303,10 @@ const Orders = memo(function Orders() {
                                 <span className="badge bg-light text-dark me-3">{item.quantity}x</span>
                                 <div>
                                   <div className="fw-semibold">{item.title}</div>
-                                  <small className="text-muted">₹{item.price?.toFixed(2) || '0.00'} each</small>
+                                  <small className="text-muted">${item.price?.toFixed(2) || '0.00'} each</small>
                                 </div>
                               </div>
-                              <span className="fw-semibold">₹{(item.quantity * item.price)?.toFixed(2) || '0.00'}</span>
+                              <span className="fw-semibold">${(item.quantity * item.price)?.toFixed(2) || '0.00'}</span>
                             </div>
                           ))}
                         </div>

@@ -52,8 +52,8 @@ const ProductCard = memo(function ProductCard({ product, variant = 'default' }) 
 
   const cardVariants = {
     default: styles.card,
-    compact: `₹{styles.card} ₹{styles.cardCompact}`,
-    minimal: `₹{styles.card} ₹{styles.cardMinimal}`,
+    compact: `${styles.card} ${styles.cardCompact}`,
+    minimal: `${styles.card} ${styles.cardMinimal}`,
   }
 
   return (
@@ -67,7 +67,7 @@ const ProductCard = memo(function ProductCard({ product, variant = 'default' }) 
       className={cardVariants[variant]}
     >
       <div className={styles.imageWrap}>
-        <Link to={`/product/₹{product.id}`}>
+        <Link to={`/product/${product.id}`}>
           <motion.img 
             whileHover={{ scale: 1.04 }} 
             transition={{ duration: 0.25 }} 
@@ -77,22 +77,22 @@ const ProductCard = memo(function ProductCard({ product, variant = 'default' }) 
             loading="lazy"
           />
         </Link>
-        <Link to={`/product/₹{product.id}`}>
+        <Link to={`/product/${product.id}`}>
           <motion.img 
             whileHover={{ scale: 1.04 }} 
             transition={{ duration: 0.25 }} 
             src={hoverImage} 
-            alt={`₹{product.title} preview`} 
+            alt={`${product.title} preview`} 
             className={styles.hoverImage}
             loading="lazy"
           />
         </Link>
         
         {/* Badges */}
-        {showSale && <span className={`₹{styles.badge} ₹{styles.saleBadge}`}>Sale</span>}
-        {product.isNew && <span className={`₹{styles.badge} ₹{styles.newBadge}`}>New</span>}
-        {product.isFeatured && <span className={`₹{styles.badge} ₹{styles.featuredBadge}`}>Featured</span>}
-        {stockStatus === 'Out of stock' && <span className={`₹{styles.badge} ₹{styles.outOfStockBadge}`}>Sold Out</span>}
+        {showSale && <span className={`${styles.badge} ${styles.saleBadge}`}>Sale</span>}
+        {product.isNew && <span className={`${styles.badge} ${styles.newBadge}`}>New</span>}
+        {product.isFeatured && <span className={`${styles.badge} ${styles.featuredBadge}`}>Featured</span>}
+        {stockStatus === 'Out of stock' && <span className={`${styles.badge} ${styles.outOfStockBadge}`}>Sold Out</span>}
 
         {/* Overlay Actions */}
         <div className={styles.overlayActions}>
@@ -118,7 +118,7 @@ const ProductCard = memo(function ProductCard({ product, variant = 'default' }) 
         <button
           type="button"
           onClick={() => toggleWishlist(product)}
-          className={`₹{styles.favoriteButton} ₹{isWishlisted ? 'active' : ''}`}
+          className={`${styles.favoriteButton} ${isWishlisted ? 'active' : ''}`}
           aria-label="Toggle wishlist"
         >
           <FiHeart />
@@ -129,11 +129,11 @@ const ProductCard = memo(function ProductCard({ product, variant = 'default' }) 
         {/* Meta Information */}
         <div className="d-flex justify-content-between align-items-center mb-2">
           <p className={styles.meta}>{product.category}</p>
-          <span className={`₹{styles.stockStatus} ₹{stockClass}`}>{stockStatus}</span>
+          <span className={`${styles.stockStatus} ${stockClass}`}>{stockStatus}</span>
         </div>
 
         {/* Product Title */}
-        <Link to={`/product/₹{product.id}`} className="text-decoration-none">
+        <Link to={`/product/${product.id}`} className="text-decoration-none">
           <h5 className={styles.title}>{product.title}</h5>
         </Link>
 
@@ -211,7 +211,7 @@ const ProductCard = memo(function ProductCard({ product, variant = 'default' }) 
               ) : (
                 <>
                   <FiShoppingCart />
-                  {variant === 'compact' ? `Add (₹{quantity})` : 'Add to Cart'}
+                  {variant === 'compact' ? `Add (${quantity})` : 'Add to Cart'}
                 </>
               )}
             </button>
