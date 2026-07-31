@@ -30,6 +30,7 @@ export default function Product() {
   const [uploadedImages, setUploadedImages] = useState([])
   const [imageDescriptions, setImageDescriptions] = useState({})
   const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState('')
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -55,6 +56,7 @@ export default function Product() {
     if (files.length === 0) return
 
     setIsUploading(true)
+    setUploadError('')
     const formData = new FormData()
     files.forEach(file => formData.append('images', file))
 
@@ -68,9 +70,10 @@ export default function Product() {
       if (response.ok) {
         setUploadedImages(prev => [...prev, ...data.images])
       } else {
-        console.error('Upload failed:', data.message)
+        setUploadError(data.message || 'Upload failed. Please try again.')
       }
     } catch (error) {
+      setUploadError('Network error. Please check your connection and try again.')
       console.error('Upload error:', error)
     } finally {
       setIsUploading(false)
@@ -82,10 +85,42 @@ export default function Product() {
   }
 
   const handleDescriptionChange = (index, description) => {
-    setImageDescriptions(prev => ({
-      ...prev,
-      [index]: description
-    }))
+    if (description.length <= 200) {
+      setImageDescriptions(prev => ({
+        ...prev,
+        [index]: description
+      }))
+    }
+  }
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length === 0) return;
+
+    setIsUploading(true);
+    const formData = new FormData();
+    files.forEach(file => formData.append('images', file));
+
+    fetch('http://localhost:5002/api/products/upload', {
+      method: 'POST',
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.images) {
+        setUploadedImages(prev => [...prev, ...data.images]);
+      }
+    })
+    .catch(error => console.error('Upload error:', error))
+    .finally(() => setIsUploading(false));
   }
 
   if (isLoading) return <Loader />
@@ -150,46 +185,136 @@ export default function Product() {
               {isCustomProduct && (
                 <div className={styles.sectionBlock}>
                   <p className="fw-semibold mb-3">Upload Your Images ({uploadedImages.length}/{maxImages})</p>
-                  <div className="mb-3">
+                  
+                  {/* Upload Area */}
+                  <div 
+                    className={`border-2 border-dashed rounded-4 p-4 text-center mb-3 ${isUploading ? 'border-secondary bg-light' : uploadError ? 'border-danger' : 'border-muted hover:border-dark cursor-pointer'}`}
+                    style={{ minHeight: '120px', transition: 'all 0.3s ease' }}
+                    onClick={() => document.getElementById('image-upload').click()}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                  >
                     <input 
+                      id="image-upload"
                       type="file" 
                       multiple 
                       accept="image/*"
                       onChange={handleImageUpload}
                       disabled={isUploading || uploadedImages.length >= maxImages}
-                      className="form-control"
+                      className="d-none"
                     />
-                    {isUploading && <small className="text-muted">Uploading...</small>}
-                  </div>
-                  
-                  {uploadedImages.length > 0 && (
-                    <div className="row g-3 mt-2">
-                      {uploadedImages.map((img, index) => (
-                        <div key={index} className="col-6 col-md-4">
-                          <div className="position-relative">
-                            <img 
-                              src={`http://localhost:5002${img.image}`} 
-                              alt={`Uploaded ${index + 1}`} 
-                              className="img-fluid rounded"
-                              style={{ height: '120px', objectFit: 'cover' }}
-                            />
-                            <button 
-                              type="button"
-                              className="position-absolute top-0 end-0 btn btn-sm btn-danger rounded-circle m-1"
-                              onClick={() => removeImage(index)}
-                            >
-                              <FiX size={14} />
-                            </button>
-                          </div>
-                          <input 
-                            type="text" 
-                            className="form-control form-control-sm mt-2"
-                            placeholder="Add description..."
-                            value={imageDescriptions[index] || ''}
-                            onChange={(e) => handleDescriptionChange(index, e.target.value)}
-                          />
+                    {isUploading ? (
+                      <div className="text-center">
+                        <div className="spinner-border text-primary mb-2" role="status">
+                          <span className="visually-hidden">Loading...</span>
                         </div>
-                      ))}
+                        <p className="text-muted mb-0">Uploading images...</p>
+                      </div>
+                    ) : uploadedImages.length >= maxImages ? (
+                      <div className="text-center">
+                        <p className="text-muted mb-0">Maximum {maxImages} images reached</p>
+                      </div>
+                    ) : uploadError ? (
+                      <div className="text-center">
+                        <div className="mb-2">
+                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#dc3545" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                          </svg>
+                        </div>
+                        <p className="text-danger fw-semibold mb-1">Upload Failed</p>
+                        <p className="text-muted small mb-2">{uploadError}</p>
+                        <button 
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => setUploadError('')}
+                        >
+                          Try Again
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <div className="mb-2">
+                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                          </svg>
+                        </div>
+                        <p className="fw-semibold mb-1">Click to upload images</p>
+                        <p className="text-muted small mb-0">or drag and drop</p>
+                        <p className="text-muted small">JPG, PNG, GIF, WebP (max 5MB each)</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Progress Bar */}
+                  {uploadedImages.length > 0 && (
+                    <div className="mb-3">
+                      <div className="d-flex justify-content-between mb-1">
+                        <small className="text-muted">Upload Progress</small>
+                        <small className="text-muted">{uploadedImages.length}/{maxImages} images</small>
+                      </div>
+                      <div className="progress" style={{ height: '6px' }}>
+                        <div 
+                          className="progress-bar bg-success" 
+                          role="progressbar" 
+                          style={{ width: `${(uploadedImages.length / maxImages) * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Uploaded Images Grid */}
+                  {uploadedImages.length > 0 && (
+                    <div className="mt-4">
+                      <p className="fw-semibold mb-3">Your Images</p>
+                      <div className="row g-3">
+                        {uploadedImages.map((img, index) => (
+                          <div key={index} className="col-12 col-md-6">
+                            <div className="card border-0 shadow-sm rounded-3 overflow-hidden">
+                              <div className="position-relative" style={{ height: '180px' }}>
+                                <img 
+                                  src={img.image} 
+                                  alt={`Uploaded ${index + 1}`} 
+                                  className="w-100 h-100 object-fit-cover"
+                                />
+                                <div className="position-absolute top-0 end-0 p-2">
+                                  <button 
+                                    type="button"
+                                    className="btn btn-danger btn-sm rounded-circle shadow"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      removeImage(index);
+                                    }}
+                                    style={{ width: '32px', height: '32px', padding: '0' }}
+                                  >
+                                    <FiX size={14} />
+                                  </button>
+                                </div>
+                                <div className="position-absolute bottom-0 start-0 end-0 bg-dark bg-opacity-50 text-white p-2">
+                                  <small className="fw-semibold">Image {index + 1}</small>
+                                </div>
+                              </div>
+                              <div className="p-3">
+                                <label className="form-label small fw-semibold">Description</label>
+                                <textarea 
+                                  className="form-control form-control-sm"
+                                  rows="2"
+                                  placeholder="Add a special message or memory for this image..."
+                                  value={imageDescriptions[index] || ''}
+                                  onChange={(e) => handleDescriptionChange(index, e.target.value)}
+                                  style={{ resize: 'none' }}
+                                />
+                                <div className="d-flex justify-content-between mt-2">
+                                  <small className="text-muted">{(imageDescriptions[index] || '').length}/200 characters</small>
+                                  <small className="text-muted">Optional</small>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
