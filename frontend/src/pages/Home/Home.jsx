@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import Hero from '../../components/Hero/Hero'
+import Loader from '../../components/Loader/Loader'
 import ProductCard from '../../components/ProductCard/ProductCard'
 import Testimonials from '../../components/Testimonials/Testimonials'
 import InstagramGallery from '../../components/InstagramGallery/InstagramGallery'

@@ -7,7 +7,7 @@ import Button from '../../components/Button/Button'
 import SectionHeading from '../../components/SectionHeading/SectionHeading'
 import { useStore } from '../../context/StoreContext'
 import { formatCurrency } from '../../utils/formatters'
-import { createRazorpayOrder, initRazorpayCheckout, verifyPayment } from '../../services/payments'
+import { createRazorpayOrder, initRazorpayCheckout, verifyPayment, loadRazorpayScript } from '../../services/payments'
 import axios from 'axios'
 import styles from './Checkout.module.css'
 
@@ -29,6 +29,14 @@ export default function Checkout() {
   const handleRazorpayPayment = async (formData) => {
     try {
       setIsProcessing(true)
+      
+      // Load Razorpay script
+      const scriptLoaded = await loadRazorpayScript()
+      if (!scriptLoaded) {
+        toast.error('Failed to load payment gateway. Please try again.')
+        setIsProcessing(false)
+        return
+      }
       
       // Create Razorpay order
       const order = await createRazorpayOrder(grandTotal, 'INR')
