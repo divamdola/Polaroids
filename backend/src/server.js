@@ -17,8 +17,8 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const allowedOrigins = [
-  'https://polaroids-2.onrender.com',
-  'https://polaroids-1.onrender.com',
+  'https://polaroids-2.onrender.com', // Frontend
+  'https://polaroids-1.onrender.com', // Backend (self)
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
@@ -31,9 +31,13 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log('CORS blocked origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -57,7 +61,10 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Add a middleware to ensure proper cookie handling
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
   next();
 });
 
