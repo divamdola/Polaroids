@@ -148,7 +148,7 @@ export function StoreProvider({ children }) {
 
   const register = useCallback(async (userData) => {
     try {
-      const response = registerUser(userData)
+      const response = await registerUser(userData)
       setUser(response.user)
       toast.success(`Thanks for joining, ${response.user.name}!`)
       return response.user
