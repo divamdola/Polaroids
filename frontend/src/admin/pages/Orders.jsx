@@ -1,9 +1,10 @@
 import { memo, useEffect, useState } from 'react'
 import axios from 'axios'
-import { FiShoppingBag, FiSearch, FiEye, FiFilter, FiX, FiCheck, FiClock, FiTruck, FiPackage } from 'react-icons/fi'
+import { FiShoppingBag, FiSearch, FiEye, FiFilter, FiX, FiCheck, FiClock, FiTruck, FiPackage, FiDownload } from 'react-icons/fi'
 import AdminShell from '../components/AdminShell'
 import OrderDetailModal from '../components/OrderDetailModal'
 import Loader from '../../components/Loader/Loader'
+import InvoiceButton from '../../components/Invoice/Invoice'
 import React from 'react'
 import { formatCurrency } from '../../utils/formatters'
 
@@ -185,6 +186,9 @@ const Orders = memo(function Orders() {
                         >
                           <FiEye />
                         </button>
+                        <InvoiceButton order={order}>
+                          <FiDownload />
+                        </InvoiceButton>
                         <div className="dropdown">
                           <button className="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
                             <FiFilter />

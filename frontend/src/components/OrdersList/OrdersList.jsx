@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { FiEye, FiChevronDown, FiChevronUp } from 'react-icons/fi'
+import { FiEye, FiChevronDown, FiChevronUp, FiDownload } from 'react-icons/fi'
 import OrderTimeline from '../OrderTimeline/OrderTimeline'
 import Loader from '../Loader/Loader'
+import InvoiceButton from '../Invoice/Invoice'
+import { formatCurrency } from '../../utils/formatters'
 import React from 'react'
 
 export default function OrdersList() {
@@ -111,23 +113,28 @@ export default function OrdersList() {
                         <span className="fw-semibold">#{order._id?.slice(-6) || order._id}</span>
                       </td>
                       <td>{formatDate(order.createdAt)}</td>
-                      <td>${order.total?.toFixed(2) || '0.00'}</td>
+                      <td>{formatCurrency(order.total || 0)}</td>
                       <td>
                         <span className={`badge rounded-pill ${getStatusColor(order.status)}`}>
                           {order.status}
                         </span>
                       </td>
                       <td>
-                        <button
-                          className="btn btn-sm btn-outline-primary"
-                          onClick={() => toggleOrderExpansion(order._id)}
-                        >
-                          {expandedOrders[order._id] ? (
-                            <FiChevronUp />
-                          ) : (
-                            <FiEye />
-                          )}
-                        </button>
+                        <div className="d-flex gap-2">
+                          <button
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={() => toggleOrderExpansion(order._id)}
+                          >
+                            {expandedOrders[order._id] ? (
+                              <FiChevronUp />
+                            ) : (
+                              <FiEye />
+                            )}
+                          </button>
+                          <InvoiceButton order={order}>
+                            <FiDownload />
+                          </InvoiceButton>
+                        </div>
                       </td>
                     </tr>
                     {expandedOrders[order._id] && (

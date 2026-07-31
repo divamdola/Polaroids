@@ -1,5 +1,6 @@
 import { FiX, FiDownload, FiImage, FiUser, FiMapPin, FiPackage, FiDollarSign } from 'react-icons/fi'
 import { formatCurrency } from '../../utils/formatters'
+import InvoiceButton from '../../components/Invoice/Invoice'
 
 const OrderDetailModal = ({ order, onClose }) => {
   if (!order) return null
@@ -33,7 +34,12 @@ const OrderDetailModal = ({ order, onClose }) => {
               <h5 className="modal-title fw-semibold">Order Details #{order._id?.slice(-6) || order.id?.slice(-6)}</h5>
               <small className="text-muted">{formatDate(order.createdAt)}</small>
             </div>
-            <button type="button" className="btn-close" onClick={onClose}></button>
+            <div className="d-flex gap-2">
+              <InvoiceButton order={order}>
+                <FiDownload />
+              </InvoiceButton>
+              <button type="button" className="btn-close" onClick={onClose}></button>
+            </div>
           </div>
           
           <div className="modal-body">
