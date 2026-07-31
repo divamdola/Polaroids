@@ -6,7 +6,6 @@ import { getCurrentUser, getProducts, loginUser, logoutUser, registerUser } from
 const StoreContext = createContext(null)
 
 export function StoreProvider({ children }) {
-  const navigate = useNavigate()
   const [cart, setCart] = useState(() => {
     if (typeof window === 'undefined') {
       return []
@@ -155,10 +154,8 @@ export function StoreProvider({ children }) {
       setUser(null)
       localStorage.removeItem('authToken')
       toast.info('You have been signed out.')
-      // Redirect to home after logout
-      navigate('/')
     }
-  }, [navigate])
+  }, [])
 
   const register = useCallback(async (userData) => {
     try {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { NavLink, Link, useLocation } from 'react-router-dom'
+import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom'
 import { FiHeart, FiShoppingCart, FiMenu, FiSearch, FiUser, FiMoon, FiSun, FiX, FiHome } from 'react-icons/fi'
 import { useStore } from '../../context/StoreContext'
 import styles from './Navbar.module.css'
@@ -37,6 +37,7 @@ const collectionHighlights = [
 export default function Navbar() {
   const { cartCount, wishlistCount, user, logout } = useStore()
   const location = useLocation()
+  const navigate = useNavigate()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isShopOpen, setIsShopOpen] = useState(false)
   const [isCollectionsOpen, setIsCollectionsOpen] = useState(false)
@@ -268,6 +269,7 @@ export default function Navbar() {
                     onClick={() => {
                       logout()
                       setIsMobileOpen(false)
+                      navigate('/')
                     }}
                   >
                     Logout
