@@ -358,11 +358,13 @@ export default function Product() {
                 </Button>
                 <Button 
                   variant="outline"
-                  onClick={() => {
+                  onClick={async () => {
+                    console.log('Buy now clicked')
                     if (isCustomProduct && uploadedImages.length === 0) {
                       toast.error('Please upload at least 1 image for this custom product')
                       return
                     }
+                    console.log('Adding to cart:', product.title)
                     addToCart({ 
                       ...product, 
                       price: salePrice, 
@@ -371,7 +373,11 @@ export default function Product() {
                         description: imageDescriptions[idx] || ''
                       }))
                     }, quantity)
-                    navigate('/checkout')
+                    console.log('Navigating to checkout')
+                    toast.success('Added to cart! Redirecting to checkout...')
+                    setTimeout(() => {
+                      navigate('/checkout')
+                    }, 500)
                   }}
                   disabled={isCustomProduct && uploadedImages.length === 0}
                 >
