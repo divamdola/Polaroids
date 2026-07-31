@@ -11,8 +11,13 @@ export default function Register() {
 
   const onSubmit = async (data) => {
     try {
-      await registerUser({ name: data.name, email: data.email, password: data.password })
-      navigate('/profile')
+      const user = await registerUser({ name: data.name, email: data.email, password: data.password })
+      // Redirect admin users to admin dashboard, regular users to home
+      if (user.role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/')
+      }
     } catch (error) {
       console.error(error)
     }

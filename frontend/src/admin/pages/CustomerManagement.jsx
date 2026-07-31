@@ -21,7 +21,21 @@ const CustomerManagement = memo(function CustomerManagement() {
   const fetchUsers = async () => {
     try {
       setLoading(true)
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/users`, { withCredentials: true })
+      console.log('Fetching users from:', `${import.meta.env.VITE_API_BASE_URL}/admin/customers`)
+      
+      // Try localStorage token as fallback
+      const localToken = localStorage.getItem('authToken')
+      const headers = {}
+      if (localToken) {
+        headers['Authorization'] = `Bearer ${localToken}`
+      }
+      
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/admin/customers`, { 
+        withCredentials: true,
+        headers
+      })
+      console.log('Users response:', response.data)
+      
       const usersData = Array.isArray(response.data) ? response.data : []
       setUsers(usersData)
       
@@ -35,7 +49,10 @@ const CustomerManagement = memo(function CustomerManagement() {
       // Fetch order counts for each user (in parallel for better performance)
       const orderPromises = usersData.map(async (user) => {
         try {
-          const ordersResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/admin/users/${user._id}/orders`, { withCredentials: true })
+          const ordersResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/admin/users/${user._id}/orders`, { 
+            withCredentials: true,
+            headers
+          })
           return { userId: user._id, count: ordersResponse.data?.orders?.length || 0 }
         } catch (error) {
           console.error(`Failed to fetch orders for user ${user._id}:`, error)
@@ -51,6 +68,8 @@ const CustomerManagement = memo(function CustomerManagement() {
       setUserOrders(finalOrderCounts)
     } catch (error) {
       console.error('Failed to fetch users:', error)
+      console.error('Error details:', error.response?.data)
+      console.error('Error status:', error.response?.status)
       setUsers([])
       alert('Failed to load users. Please try again.')
     } finally {
