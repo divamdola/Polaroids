@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from 'react'
 import axios from 'axios'
 import { FiPlus, FiEdit, FiTrash2, FiSearch, FiImage, FiBox, FiTag, FiPackage } from 'react-icons/fi'
 import AdminShell from '../components/AdminShell'
+import Loader from '../../components/Loader/Loader'
 
 const ProductManagement = memo(function ProductManagement() {
   const [products, setProducts] = useState([])
@@ -166,10 +167,7 @@ const ProductManagement = memo(function ProductManagement() {
         </div>
 
         {loading ? (
-          <div className="text-center py-5">
-            <div className="spinner-border text-primary" role="status"></div>
-            <p className="text-muted mt-3">Loading products...</p>
-          </div>
+          <Loader />
         ) : (
           <div className="table-responsive">
             <table className="table table-hover">

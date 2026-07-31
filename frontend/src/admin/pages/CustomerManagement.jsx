@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { FiUsers, FiEdit, FiShield, FiUserX, FiMail, FiSearch, FiShoppingBag, FiExternalLink } from 'react-icons/fi'
 import AdminShell from '../components/AdminShell'
+import Loader from '../../components/Loader/Loader'
 
 const CustomerManagement = memo(function CustomerManagement() {
   const navigate = useNavigate()
@@ -148,10 +149,7 @@ const CustomerManagement = memo(function CustomerManagement() {
         </div>
 
         {loading ? (
-          <div className="text-center py-5">
-            <div className="spinner-border text-primary" role="status"></div>
-            <p className="text-muted mt-3">Loading users...</p>
-          </div>
+          <Loader />
         ) : (
           <div className="table-responsive">
             <table className="table table-hover">

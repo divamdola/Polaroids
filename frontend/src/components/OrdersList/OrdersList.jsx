@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { FiEye, FiChevronDown, FiChevronUp } from 'react-icons/fi'
 import OrderTimeline from '../OrderTimeline/OrderTimeline'
+import Loader from '../Loader/Loader'
 import React from 'react'
 
 export default function OrdersList() {
@@ -75,10 +76,7 @@ export default function OrdersList() {
       <div className="card border-0 shadow-sm rounded-4">
         <div className="card-body p-4">
           <h4 className="fw-semibold mb-4">Recent orders</h4>
-          <div className="text-center py-5">
-            <div className="spinner-border text-primary" role="status"></div>
-            <p className="text-muted mt-3">Loading orders...</p>
-          </div>
+          <Loader />
         </div>
       </div>
     )

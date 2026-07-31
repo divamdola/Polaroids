@@ -4,6 +4,7 @@ import { FiGrid, FiList, FiSearch, FiSliders, FiX, FiCheck } from 'react-icons/f
 import { usePageTitle } from '../../hooks/usePageTitle'
 import ProductCard from '../../components/ProductCard/ProductCard'
 import SectionHeading from '../../components/SectionHeading/SectionHeading'
+import Loader from '../../components/Loader/Loader'
 import ShopSkeleton from '../../components/ShopSkeleton/ShopSkeleton'
 import NoProducts from '../../components/NoProducts/NoProducts'
 import Pagination from '../../components/Pagination/Pagination'
@@ -117,7 +118,7 @@ export default function Shop() {
   }, [search, category, priceRange, availability])
 
   if (!isMounted) {
-    return <div className="container py-5"><div className="spinner-border text-primary" role="status"></div></div>
+    return <Loader />
   }
 
   return (

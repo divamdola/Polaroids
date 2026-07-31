@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import Loader from '../../components/Loader/Loader'
 
 const AdminRoute = ({ children }) => {
   const navigate = useNavigate()
@@ -60,14 +61,7 @@ const AdminRoute = ({ children }) => {
   }, [navigate])
 
   if (isLoading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="text-center">
-          <div className="spinner-border text-primary mb-3" role="status"></div>
-          <p className="text-muted">Checking admin permissions...</p>
-        </div>
-      </div>
-    )
+    return <Loader />
   }
 
   if (error) {

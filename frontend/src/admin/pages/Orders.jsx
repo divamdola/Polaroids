@@ -3,6 +3,7 @@ import axios from 'axios'
 import { FiShoppingBag, FiSearch, FiEye, FiFilter, FiX, FiCheck, FiClock, FiTruck, FiPackage } from 'react-icons/fi'
 import AdminShell from '../components/AdminShell'
 import OrderDetailModal from '../components/OrderDetailModal'
+import Loader from '../../components/Loader/Loader'
 import React from 'react'
 import { formatCurrency } from '../../utils/formatters'
 
@@ -127,10 +128,7 @@ const Orders = memo(function Orders() {
         </div>
 
         {loading ? (
-          <div className="text-center py-5">
-            <div className="spinner-border text-primary" role="status"></div>
-            <p className="text-muted mt-3">Loading orders...</p>
-          </div>
+          <Loader />
         ) : (
           <div className="table-responsive">
             <table className="table table-hover">

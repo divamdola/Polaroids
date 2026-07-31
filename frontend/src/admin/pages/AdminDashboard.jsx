@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from 'react'
 import axios from 'axios'
 import AdminShell from '../components/AdminShell'
+import Loader from '../../components/Loader/Loader'
 import { formatCurrency } from '../../utils/formatters'
 
 const AdminDashboard = memo(function AdminDashboard() {
@@ -26,7 +27,10 @@ const AdminDashboard = memo(function AdminDashboard() {
 
   return (
     <AdminShell>
-      <div className="row g-3">
+      {loading ? (
+        <Loader />
+      ) : (
+        <div className="row g-3">
         <div className="col-md-6">
           <div className="card border-0 shadow-sm rounded-4 p-4">
             <p className="text-muted mb-2">Revenue</p>
@@ -52,6 +56,7 @@ const AdminDashboard = memo(function AdminDashboard() {
           </div>
         </div>
       </div>
+      )}
     </AdminShell>
   )
 })

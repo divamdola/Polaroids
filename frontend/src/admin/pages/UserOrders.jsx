@@ -4,6 +4,7 @@ import axios from 'axios'
 import { FiArrowLeft, FiShoppingBag, FiEye, FiFilter, FiX, FiCheck, FiClock, FiTruck, FiPackage, FiChevronDown, FiChevronUp } from 'react-icons/fi'
 import AdminShell from '../components/AdminShell'
 import OrderTimeline from '../../components/OrderTimeline/OrderTimeline'
+import Loader from '../../components/Loader/Loader'
 import React from 'react'
 
 const UserOrders = memo(function UserOrders() {
@@ -112,10 +113,7 @@ const UserOrders = memo(function UserOrders() {
         </div>
 
         {loading ? (
-          <div className="text-center py-5">
-            <div className="spinner-border text-primary" role="status"></div>
-            <p className="text-muted mt-3">Loading orders...</p>
-          </div>
+          <Loader />
         ) : (
           <div className="table-responsive">
             <table className="table table-hover">

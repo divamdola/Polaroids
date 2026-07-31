@@ -35,7 +35,7 @@ const Home = memo(function Home() {
       <Hero />
 
       {/* Featured Products */}
-      <section className={`container ${styles.section}`}>
+      <section className={`container`}>
         <motion.div 
           initial="hidden"
           whileInView="visible"
@@ -77,7 +77,7 @@ const Home = memo(function Home() {
         initial={{ opacity: 0, y: 20 }} 
         whileInView={{ opacity: 1, y: 0 }} 
         viewport={{ once: true }} 
-        className={`${styles.section} ${styles.featureStrip}`}
+        className={`${styles.featureStrip}`}
       >
         <div className="container text-center">
           <p className={`mb-2 ${styles.eyebrow}`}>Polaroid rituals</p>

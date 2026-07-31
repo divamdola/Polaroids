@@ -125,7 +125,7 @@ export default function Product() {
   }
 
   if (isLoading) return <Loader />
-  if (!product) return <section className="container py-5"><h3>Product not found.</h3></section>
+  if (!product) return <section className="container"><h3>Product not found.</h3></section>
 
   const salePrice = selectedVariant ? selectedVariant.price : (product.salePrice || product.price * 0.92)
   const discount = Math.round(((product.price - salePrice) / product.price) * 100)
@@ -134,7 +134,7 @@ export default function Product() {
   const maxImages = selectedVariant ? selectedVariant.imageCount : 6
 
   return (
-    <section className="container py-5">
+    <section className="container">
       <Link to="/shop" className="btn btn-outline-dark rounded-pill btn-sm mb-4">
         <FiArrowLeft className="me-2" /> Back to shop
       </Link>
