@@ -1,10 +1,9 @@
 services:
   - type: web
     name: polaroids-frontend
-    env: node
+    env: static
     buildCommand: npm install && npm run build
-    publishDirectory: .
-    startCommand: node server.js
+    publishDirectory: dist
     envVars:
       - key: VITE_API_BASE_URL
         value: https://polaroids-1.onrender.com/api
