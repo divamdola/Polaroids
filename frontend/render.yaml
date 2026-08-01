@@ -7,6 +7,11 @@ services:
     envVars:
       - key: VITE_API_BASE_URL
         value: https://polaroids-1.onrender.com/api
+    # Render-specific routing configuration for SPA
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     headers:
       - source: /*
         headers:

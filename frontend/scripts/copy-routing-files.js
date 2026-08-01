@@ -7,6 +7,7 @@ const __dirname = path.dirname(__filename);
 
 const filesToCopy = [
   { source: 'public/_redirects', dest: 'dist/_redirects' },
+  { source: 'public/_headers', dest: 'dist/_headers' },
   { source: '.htaccess', dest: 'dist/.htaccess' },
   { source: 'netlify.toml', dest: 'dist/netlify.toml' },
   { source: 'vercel.json', dest: 'dist/vercel.json' }
