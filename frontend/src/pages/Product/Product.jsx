@@ -13,7 +13,7 @@ import { toast } from 'react-toastify'
 import styles from './Product.module.css'
 
 const galleryImages = [
-  'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80',
+  'https://images.unsplash.com/photo-1623082185808-579b6093d0dd?ixid=M3w4MjcwNjd8MHwxfHNlYXJjaHwzfHxwb2xhcm9pZHxlbnwwfHx8fDE3ODU1NjY3ODV8MA&ixlib=rb-4.1.0&fit=max&q=80',
   'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=1200&q=80',
   'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80',
 ]
