@@ -231,11 +231,6 @@ const OrderDetailModal = ({ order, onClose }) => {
       </div>
     </>
   )
-          </div>
-        </div>
-      </div>
-    </div>
-  )
 }
 
 export default OrderDetailModal
