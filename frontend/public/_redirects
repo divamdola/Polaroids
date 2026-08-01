@@ -1,4 +1,1 @@
-/* /index.html 200
-# Handle client-side routing for SPA
-# This ensures that on page refresh, the server returns index.html for all routes
-# and React Router takes over
+/*    /index.html   200

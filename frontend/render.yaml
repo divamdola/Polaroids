@@ -1,9 +1,10 @@
 services:
   - type: web
     name: polaroids-frontend
-    env: static
-    buildCommand: npm install && npm run build && cp public/_redirects dist/_redirects && cp .htaccess dist/.htaccess && cp netlify.toml dist/netlify.toml && cp vercel.json dist/vercel.json
-    publishDirectory: dist
+    env: node
+    buildCommand: npm install && npm run build
+    publishDirectory: .
+    startCommand: node server.js
     envVars:
       - key: VITE_API_BASE_URL
         value: https://polaroids-1.onrender.com/api
@@ -16,5 +17,3 @@ services:
             value: "GET, POST, PUT, DELETE, OPTIONS"
           - key: Access-Control-Allow-Headers
             value: "Content-Type, Authorization"
-    # Handle client-side routing for SPA - this is critical for React Router
-    # Render static sites don't support the routes config, so we rely on _redirects file
