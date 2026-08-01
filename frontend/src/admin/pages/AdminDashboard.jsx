@@ -1,21 +1,24 @@
 import { memo, useEffect, useState } from 'react'
-import axios from 'axios'
 import AdminShell from '../components/AdminShell'
 import Loader from '../../components/Loader/Loader'
 import { formatCurrency } from '../../utils/formatters'
+import { getAdminDashboard } from '../../services/api'
 
 const AdminDashboard = memo(function AdminDashboard() {
   const [stats, setStats] = useState({ totalRevenue: 0, totalOrders: 0, totalInventory: 0, totalCustomers: 0, lowStockItems: [] })
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const loadStats = async () => {
       try {
         setLoading(true)
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/admin/dashboard`, { withCredentials: true })
-        setStats(response.data)
+        setError(null)
+        const data = await getAdminDashboard()
+        setStats(data)
       } catch (error) {
         console.error('Failed to load dashboard stats:', error)
+        setError('Failed to load dashboard data')
         // Keep default stats on error
       } finally {
         setLoading(false)
@@ -29,6 +32,10 @@ const AdminDashboard = memo(function AdminDashboard() {
     <AdminShell>
       {loading ? (
         <Loader />
+      ) : error ? (
+        <div className="alert alert-danger rounded-4">
+          {error}
+        </div>
       ) : (
         <div className="row g-3">
         <div className="col-md-6">

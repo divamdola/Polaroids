@@ -9,6 +9,8 @@ const router = Router();
 
 router.get('/dashboard', requireAuth, requireAdmin, async (_req, res) => {
   try {
+    console.log('Admin dashboard request from user:', _req.user);
+    
     const [products, users, orders] = await Promise.all([
       Product.find({ isActive: true }),
       User.find({ isActive: true }).select('-password'),
@@ -26,24 +28,29 @@ router.get('/dashboard', requireAuth, requireAdmin, async (_req, res) => {
       lowStockItems,
     });
   } catch (error) {
+    console.error('Dashboard error:', error);
     return res.status(500).json({ message: 'Unable to load dashboard stats', error: error.message });
   }
 });
 
 router.get('/inventory', requireAuth, requireAdmin, async (_req, res) => {
   try {
+    console.log('Admin inventory request from user:', _req.user);
     const products = await Product.find({ isActive: true }).sort({ createdAt: -1 });
     return res.json(products);
   } catch (error) {
+    console.error('Admin inventory error:', error);
     return res.status(500).json({ message: 'Unable to fetch inventory', error: error.message });
   }
 });
 
 router.get('/orders', requireAuth, requireAdmin, async (_req, res) => {
   try {
+    console.log('Admin orders request from user:', _req.user);
     const orders = await Order.find().populate('user', 'name email').sort({ createdAt: -1 });
     return res.json(orders);
   } catch (error) {
+    console.error('Admin orders error:', error);
     return res.status(500).json({ message: 'Unable to fetch orders', error: error.message });
   }
 });

@@ -48,6 +48,12 @@ app.use(cors({
   maxAge: 86400,
 }));
 
+// Log all incoming requests for debugging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin} - Cookies: ${req.headers.cookie ? 'Present' : 'None'}`);
+  next();
+});
+
 app.use(cookieParser());
 app.use(express.json());
 

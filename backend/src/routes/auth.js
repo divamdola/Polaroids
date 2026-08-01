@@ -10,19 +10,14 @@ const router = Router();
 const createToken = (user) => jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'polaroid-secret', { expiresIn: '7d' });
 
 const getCookieOptions = () => {
-  if (process.env.NODE_ENV === 'production') {
-    return {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    };
-  }
+  const isProduction = process.env.NODE_ENV === 'production';
   return {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: false,
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction,
     maxAge: 1000 * 60 * 60 * 24 * 7,
+    path: '/',
+    domain: isProduction ? undefined : undefined, // Let browser handle domain automatically
   };
 };
 
@@ -104,7 +99,13 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/logout', (_req, res) => {
-  res.clearCookie('token');
+  const isProduction = process.env.NODE_ENV === 'production';
+  res.clearCookie('token', {
+    httpOnly: true,
+    sameSite: isProduction ? 'none' : 'lax',
+    secure: isProduction,
+    path: '/',
+  });
   return res.json({ message: 'Logged out successfully' });
 });
 

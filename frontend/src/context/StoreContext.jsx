@@ -138,10 +138,11 @@ export function StoreProvider({ children }) {
     try {
       await logoutUser()
     } catch (error) {
-      console.error(error)
+      console.error('Logout error:', error)
     } finally {
       setUser(null)
       localStorage.removeItem('authToken')
+      localStorage.removeItem('polaroid-user')
       toast.info('You have been signed out.')
     }
   }, [])
