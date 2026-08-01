@@ -1,18 +1,47 @@
-import { FiX, FiDownload, FiImage, FiUser, FiMapPin, FiPackage, FiDollarSign } from 'react-icons/fi'
+import { FiX, FiDownload, FiImage, FiUser, FiMapPin, FiPackage, FiDollarSign, FiLoader } from 'react-icons/fi'
 import { formatCurrency } from '../../utils/formatters'
 import InvoiceButton from '../../components/Invoice/Invoice'
+import { useState } from 'react'
 
 const OrderDetailModal = ({ order, onClose }) => {
   if (!order) return null
+  const [downloadingImage, setDownloadingImage] = useState(null)
 
-  const handleDownloadImage = (imageUrl, imageName) => {
-    const link = document.createElement('a')
-    link.href = imageUrl
-    link.download = imageName || 'custom-image.jpg'
-    link.target = '_blank'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+  const handleDownloadImage = async (imageUrl, imageName) => {
+    setDownloadingImage(imageName)
+    try {
+      // Fetch the image as a blob to maintain quality
+      const response = await fetch(imageUrl)
+      const blob = await response.blob()
+      
+      // Create a blob URL
+      const blobUrl = URL.createObjectURL(blob)
+      
+      // Create download link
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = imageName || `custom-image-${Date.now()}.jpg`
+      
+      // Trigger download
+      document.body.appendChild(link)
+      link.click()
+      
+      // Cleanup
+      document.body.removeChild(link)
+      URL.revokeObjectURL(blobUrl)
+    } catch (error) {
+      console.error('Failed to download image:', error)
+      // Fallback to direct link download
+      const link = document.createElement('a')
+      link.href = imageUrl
+      link.download = imageName || 'custom-image.jpg'
+      link.target = '_self'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } finally {
+      setDownloadingImage(null)
+    }
   }
 
   const formatDate = (dateString) => {
@@ -26,9 +55,22 @@ const OrderDetailModal = ({ order, onClose }) => {
   }
 
   return (
-    <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
-      <div className="modal-dialog modal-lg modal-dialog-centered">
-        <div className="modal-content rounded-4">
+    <>
+      <style>
+        {`
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+          .spin {
+            animation: spin 1s linear infinite;
+            display: inline-block;
+          }
+        `}
+      </style>
+      <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content rounded-4">
           <div className="modal-header border-0 pb-0">
             <div>
               <h5 className="modal-title fw-semibold">Order Details #{order._id?.slice(-6) || order.id?.slice(-6)}</h5>
@@ -131,9 +173,14 @@ const OrderDetailModal = ({ order, onClose }) => {
                                   )}
                                   <button
                                     className="btn btn-sm btn-outline-primary w-100"
-                                    onClick={() => handleDownloadImage(customImg.image, `custom-image-${imgIndex + 1}.jpg`)}
+                                    onClick={() => handleDownloadImage(customImg.image, `${order._id?.slice(-6)}-${item.title?.replace(/\s+/g, '-')}-${imgIndex + 1}.jpg`)}
+                                    disabled={downloadingImage === `${order._id?.slice(-6)}-${item.title?.replace(/\s+/g, '-')}-${imgIndex + 1}.jpg`}
                                   >
-                                    <FiDownload className="me-1" /> Download
+                                    {downloadingImage === `${order._id?.slice(-6)}-${item.title?.replace(/\s+/g, '-')}-${imgIndex + 1}.jpg` ? (
+                                      <><FiLoader className="me-1 spin" /> Downloading...</>
+                                    ) : (
+                                      <><FiDownload className="me-1" /> Download</>
+                                    )}
                                   </button>
                                 </div>
                               </div>
@@ -179,6 +226,11 @@ const OrderDetailModal = ({ order, onClose }) => {
             <button type="button" className="btn btn-secondary rounded-pill" onClick={onClose}>
               Close
             </button>
+          </div>
+        </div>
+      </div>
+    </>
+  )
           </div>
         </div>
       </div>
